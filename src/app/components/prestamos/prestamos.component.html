@@ -26,10 +26,18 @@
     [loanData]="prestamoCocheData"
     (back)="onPrestamoCocheResumenBack()"
     (next)="onPrestamoCocheResumenNext()"
-    (viewOtherLoans)="onResumenViewOtherLoans()"
-    (goToPosicionGlobal)="onResumenGoToPosicionGlobalFromDecline()"
     (closeRequested)="onCloseRequestedPrestamoCoche()">
   </app-prestamo-coche-resumen>
+
+  <!-- Préstamo Coche: Confirmación normativa (40% ingresos) -->
+  <app-prestamo-coche-normativa
+    *ngIf="prestamoCocheView === 'normativa'"
+    (back)="onPrestamoCocheNormativaBack()"
+    (accepted)="onPrestamoCocheNormativaAccepted()"
+    (viewOtherLoans)="onNormativaViewOtherLoans()"
+    (goToPosicionGlobal)="onNormativaGoToPosicionGlobal()"
+    (closeRequested)="onCloseRequestedPrestamoCoche()">
+  </app-prestamo-coche-normativa>
 
   <!-- Préstamo Coche: Loading antes de Documentación -->
   <app-prestamo-coche-loading

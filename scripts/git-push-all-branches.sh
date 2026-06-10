@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Sube main, v1 y v2 a GitHub. No guardes el token en archivos.
+# Sube main a GitHub. No guardes el token en archivos.
 # Uso:
-#   export GITHUB_TOKEN="ghp_xxxxxxxx"   # o fine-grained PAT
+#   export GITHUB_TOKEN="ghp_xxxxxxxx"
 #   ./scripts/git-push-all-branches.sh
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -11,7 +11,5 @@ if [[ -z "${GITHUB_TOKEN:-}" ]]; then
 fi
 OWNER_REPO="gonzalezjuandi/MoneyConfidence-tabs"
 URL="https://${GITHUB_TOKEN}@github.com/${OWNER_REPO}.git"
-for branch in main v1 v2; do
-  git push -u "${URL}" "${branch}"
-done
-echo "Listo: main, v1, v2 en origin."
+git push -u "${URL}" main
+echo "Listo: main en origin."

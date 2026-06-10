@@ -67,45 +67,6 @@
                 { "type": "initial", "maximumWarning": "1.5mb", "maximumError": "2mb" },
                 { "type": "anyComponentStyle", "maximumWarning": "1mb", "maximumError": "2mb" }
               ]
-            },
-            "v2": {
-              "buildOptimizer": false,
-              "optimization": false,
-              "vendorChunk": true,
-              "extractLicenses": false,
-              "sourceMap": true,
-              "namedChunks": true,
-              "budgets": [
-                { "type": "initial", "maximumWarning": "1.5mb", "maximumError": "2mb" },
-                { "type": "anyComponentStyle", "maximumWarning": "1mb", "maximumError": "2mb" }
-              ],
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.v2.ts"
-                }
-              ]
-            },
-            "v2-production": {
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "1.5mb",
-                  "maximumError": "2mb"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "1mb",
-                  "maximumError": "2mb"
-                }
-              ],
-              "outputHashing": "all",
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.v2.prod.ts"
-                }
-              ]
             }
           },
           "defaultConfiguration": "production"
@@ -121,9 +82,6 @@
             },
             "development": {
               "buildTarget": "money-confidence:build:development"
-            },
-            "v2": {
-              "buildTarget": "money-confidence:build:v2"
             }
           },
           "defaultConfiguration": "development"

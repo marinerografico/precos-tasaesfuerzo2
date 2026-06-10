@@ -28,6 +28,7 @@ export class PrestamosComponent implements AfterViewInit, OnInit {
     | 'sabadell-flow'
     | 'simulation'
     | 'resumen'
+    | 'normativa'
     | 'document-loading'
     | 'document-manager'
     | 'firma'
@@ -801,16 +802,16 @@ export class PrestamosComponent implements AfterViewInit, OnInit {
     }
   }
 
-  /** Desde resumen: tras spinner → simulación de otro producto (sin pasar por listado; sin onboarding preconcedido) */
-  onResumenViewOtherLoans(): void {
+  /** Desde normativa (KO 40%): tras spinner → onboarding Préstamo Sabadell (no preconcedido) */
+  onNormativaViewOtherLoans(): void {
     this.hidePreconcedidoCard = true;
     this.showPrestamoCocheOnboarding = false;
-    this.prestamoCocheView = 'simulation';
+    this.prestamoCocheView = 'sabadell-flow';
     this.initializeIcons();
   }
 
-  /** Desde resumen: usuario declina y va a Posición Global */
-  onResumenGoToPosicionGlobalFromDecline(): void {
+  /** Desde normativa: usuario declina y va a Posición Global */
+  onNormativaGoToPosicionGlobal(): void {
     this.hidePreconcedidoCard = true;
     this.prestamoCocheView = 'none';
     this.wizardState.setCurrentStep(1);
@@ -818,6 +819,24 @@ export class PrestamosComponent implements AfterViewInit, OnInit {
   }
 
   onPrestamoCocheResumenNext(): void {
+    this.prestamoCocheView = 'normativa';
+    if (typeof lucide !== 'undefined') {
+      setTimeout(() => {
+        lucide.createIcons();
+      }, 100);
+    }
+  }
+
+  onPrestamoCocheNormativaBack(): void {
+    this.prestamoCocheView = 'resumen';
+    if (typeof lucide !== 'undefined') {
+      setTimeout(() => {
+        lucide.createIcons();
+      }, 100);
+    }
+  }
+
+  onPrestamoCocheNormativaAccepted(): void {
     // Mostrar loading antes de navegar al gestor documental
     this.prestamoCocheView = 'document-loading';
     if (typeof lucide !== 'undefined') {

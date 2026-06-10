@@ -1,0 +1,159 @@
+<div class="prestamo-coche-normativa-container">
+  <div class="prestamo-coche-normativa-wrapper" *ngIf="screen === 'question'">
+    <header class="prestamo-wizard-header">
+      <div class="prestamo-wizard-header__start">
+        <button type="button" class="prestamo-wizard-header__back" (click)="onBack()" aria-label="Volver">
+          <i data-lucide="arrow-left" class="prestamo-wizard-header__back-icon w-4 h-4 stroke-[1.5]"></i>
+        </button>
+      </div>
+      <h1 class="prestamo-wizard-header__title">Préstamo Preconcedido</h1>
+      <div class="prestamo-wizard-header__actions">
+        <button type="button" class="prestamo-wizard-header__icon-btn" aria-label="Ayuda">
+          <img
+            class="prestamo-wizard-header__icon"
+            src="assets/icons/prestamo-ayuda-icon.png"
+            width="26"
+            height="26"
+            alt=""
+            decoding="async" />
+        </button>
+        <button type="button" class="prestamo-wizard-header__icon-btn" aria-label="Cerrar" (click)="onCloseRequest()">
+          <img
+            class="prestamo-wizard-header__icon"
+            src="assets/icons/prestamo-cerrar-icon.png"
+            width="26"
+            height="26"
+            alt=""
+            decoding="async" />
+        </button>
+      </div>
+    </header>
+
+    <main class="normativa-main" *ngIf="screen === 'question'">
+      <h2 class="normativa-title">Información económica</h2>
+
+      <section class="normativa-question-block" aria-labelledby="normativa-q1">
+        <p id="normativa-q1" class="normativa-question">
+          ¿Pagas cuotas de préstamos u otros productos financieros en otras entidades?
+        </p>
+        <div class="normativa-options" role="radiogroup" aria-labelledby="normativa-q1">
+          <label class="normativa-option" [class.normativa-option--selected]="paysElsewhereAnswer === 'yes'">
+            <input
+              type="radio"
+              name="paysElsewhere"
+              value="yes"
+              class="normativa-option-input"
+              [checked]="paysElsewhereAnswer === 'yes'"
+              (change)="selectPaysElsewhere('yes')" />
+            <span class="normativa-option-control" aria-hidden="true"></span>
+            <span class="normativa-option-label">Sí</span>
+          </label>
+          <label class="normativa-option" [class.normativa-option--selected]="paysElsewhereAnswer === 'no'">
+            <input
+              type="radio"
+              name="paysElsewhere"
+              value="no"
+              class="normativa-option-input"
+              [checked]="paysElsewhereAnswer === 'no'"
+              (change)="selectPaysElsewhere('no')" />
+            <span class="normativa-option-control" aria-hidden="true"></span>
+            <span class="normativa-option-label">No</span>
+          </label>
+        </div>
+      </section>
+
+      <section
+        *ngIf="showSecondQuestion"
+        class="normativa-question-block normativa-question-block--reveal"
+        aria-labelledby="normativa-q2">
+        <p id="normativa-q2" class="normativa-question">
+          Después de pagar esas cuotas, ¿te queda disponible más del 40% de tus ingresos al mes?
+        </p>
+        <div class="normativa-options" role="radiogroup" aria-labelledby="normativa-q2">
+          <label class="normativa-option" [class.normativa-option--selected]="secondAnswer === 'yes'">
+            <input
+              type="radio"
+              name="secondAnswer"
+              value="yes"
+              class="normativa-option-input"
+              [checked]="secondAnswer === 'yes'"
+              (change)="selectSecondAnswer('yes')" />
+            <span class="normativa-option-control" aria-hidden="true"></span>
+            <span class="normativa-option-label">Sí</span>
+          </label>
+          <label class="normativa-option" [class.normativa-option--selected]="secondAnswer === 'no'">
+            <input
+              type="radio"
+              name="secondAnswer"
+              value="no"
+              class="normativa-option-input"
+              [checked]="secondAnswer === 'no'"
+              (change)="selectSecondAnswer('no')" />
+            <span class="normativa-option-control" aria-hidden="true"></span>
+            <span class="normativa-option-label">No</span>
+          </label>
+        </div>
+      </section>
+
+      <p class="normativa-info">
+        <i data-lucide="info" class="normativa-info-icon" aria-hidden="true"></i>
+        <span>
+          Por normativa, necesitamos confirmar que puedes asumir todas tus cuotas, incluido este préstamo, sin superar el 40% de tus ingresos netos.
+        </span>
+      </p>
+    </main>
+
+    <footer class="normativa-footer">
+      <button
+        type="button"
+        class="normativa-cta"
+        [disabled]="!canContinue"
+        (click)="onContinuar()">
+        Continuar
+      </button>
+    </footer>
+  </div>
+
+  <div
+    class="loan-unavailable-screen"
+    *ngIf="screen === 'unavailable'"
+    role="alertdialog"
+    aria-modal="true"
+    aria-labelledby="loan-unavailable-title">
+    <div class="loan-unavailable-inner">
+      <div class="loan-unavailable-icon-wrap" aria-hidden="true">
+        <i data-lucide="x" class="loan-unavailable-icon-x"></i>
+      </div>
+      <h1 id="loan-unavailable-title" class="loan-unavailable-title">Este préstamo no está disponible</h1>
+      <p class="loan-unavailable-lead">
+        Según la información indicada, <strong>las cuotas de tus financiaciones superarían el 40% de tus ingresos netos.</strong>
+      </p>
+      <p class="loan-unavailable-muted">
+        Si necesitas ayuda o quieres revisar otras opciones, puedes acudir a tu oficina o consultar otro préstamo disponible.
+      </p>
+      <div class="loan-unavailable-actions">
+        <button type="button" class="loan-unavailable-btn loan-unavailable-btn--primary" (click)="onViewOtherLoansFromUnavailable()">
+          Ir a Préstamo Sabadell
+        </button>
+        <button type="button" class="loan-unavailable-btn loan-unavailable-btn--outline" (click)="onGoToPosicionGlobalFromUnavailable()">
+          Ir a Posición Global
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="other-product-redirect-overlay"
+    *ngIf="screen === 'redirect-spinner'"
+    role="status"
+    aria-live="polite"
+    aria-busy="true">
+    <div class="other-product-redirect-content">
+      <div class="other-product-redirect-spinner" aria-hidden="true"></div>
+      <h2 class="other-product-redirect-title">Preparando Préstamo Sabadell</h2>
+      <p class="other-product-redirect-text">
+        Te llevamos al proceso de solicitud para que puedas ver si el banco te lo aprueba.
+      </p>
+    </div>
+  </div>
+</div>

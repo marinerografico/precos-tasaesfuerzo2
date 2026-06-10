@@ -1,41 +1,31 @@
 # MoneyConfidence-tabs
 
-Posición global: **pestañas** «Tu saldo total» / «Próximos pagos» (importe del otro modo en gris bajo la pestaña inactiva). Misma lógica **V1 / V2** que el proyecto base (`scripts/vercel-build.cjs`, `environment.v2.*`).
+## Entrada de la app
 
----
+**Login** (`/acceso`) → **Posición global** (`/app/posicion-global`).
 
-# Dos experiencias, dos despliegues, dos URLs
+Sin pantalla push, sin splash de bienvenida ni modal de próximos pagos.
 
-| | **V1** | **V2** |
-|---|--------|--------|
-| **Qué incluye** | Pantalla tipo **push** (`/notificacion`) → **login** → **bienvenida** con modal «Revisa tus próximos pagos» → app | **Solo login** → inicio (`/app/posicion-global`). Sin push, sin pantalla de notificación, sin modal de gastos |
-| **Build producción** | `npm run build:v1` | `npm run build:v2` |
-| **Local** | `npm run start:v1` (o `npm start`) | `npm run start:v2` |
-| **Entorno Angular** | `environment.prod.ts` | `environment.v2.prod.ts` (vía `angular.json` → `v2-production`) |
+## Desarrollo local
 
-## Vercel: un solo proyecto y previews por rama
+```bash
+npm install
+npm start
+```
 
-El comando por defecto **`npm run build`** ejecuta `scripts/vercel-build.cjs`, que usa **`VERCEL_GIT_COMMIT_REF`** (nombre de la rama que Vercel está construyendo):
+Abre [http://localhost:4200](http://localhost:4200) (redirige a `/acceso`).
 
-| Rama | Bundle |
-|------|--------|
-| `V2` o `MoneyConfidence-v2` | **V2** |
-| `main`, `MoneyConfidence-v1`, otras | **V1** |
+## Build y Vercel
 
-- En **Project → Settings → Build**, deja **Build Command** vacío o `npm run build` (no fuerces solo `build:v1` si quieres previews V2).
-- **Output directory:** activa *Override* y pon **`dist/money-confidence`**. El preset Angular de Vercel sugiere `dist`, pero este proyecto genera en **`dist/money-confidence`** (`angular.json`).
-- Cada **preview** en la pestaña Deployments tiene su URL: abre la de la rama `V2` o `MoneyConfidence-v2` para probar V2.
+```bash
+npm run build
+# o
+npm run build:prod
+```
 
-Tras subir este cambio, haz **Redeploy** de los previews V2 o un push nuevo para que el build use el script nuevo.
+- **Build command:** `npm run build` (o vacío si Vercel usa el script por defecto del proyecto).
+- **Output directory:** `dist/money-confidence` (override en Vercel; no uses solo `dist`).
 
-## Vercel: dos proyectos fijos (alternativa)
+## Posición global
 
-Dos dominios de producción distintos:
-
-1. Proyecto V1: **Build Command** `npm run build:v1`, rama p. ej. `main`.
-2. Proyecto V2: **Build Command** `npm run build:v2`, rama p. ej. `V2`.
-
-## Resumen técnico
-
-- Los flags están en `src/environments/`; los guards solo aplican en bundle V2.
-- La variante la fija el **configuration** de Angular (`production` vs `v2-production`).
+Pestañas «Tu saldo total» / «Próximos pagos» en la pantalla de inicio.

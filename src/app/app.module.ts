@@ -21,14 +21,13 @@ import { AmountSliderGalateaComponent } from './components/amount-slider-galatea
 import { PrestamoCocheOnboardingComponent } from './components/prestamo-coche-onboarding/prestamo-coche-onboarding.component';
 import { PrestamoCocheSimulacionComponent } from './components/prestamo-coche-simulacion/prestamo-coche-simulacion.component';
 import { PrestamoCocheResumenComponent } from './components/prestamo-coche-resumen/prestamo-coche-resumen.component';
+import { PrestamoCocheNormativaComponent } from './components/prestamo-coche-normativa/prestamo-coche-normativa.component';
 import { PrestamoCocheDocumentManagerComponent } from './components/prestamo-coche-document-manager/prestamo-coche-document-manager.component';
 import { PrestamoCocheFirmaComponent } from './components/prestamo-coche-firma/prestamo-coche-firma.component';
 import { PrestamoCocheSeguroDocumentManagerComponent } from './components/prestamo-coche-seguro-document-manager/prestamo-coche-seguro-document-manager.component';
 import { PrestamoCocheLoadingComponent } from './components/prestamo-coche-loading/prestamo-coche-loading.component';
 import { PrestamoCocheConfirmacionComponent } from './components/prestamo-coche-confirmacion/prestamo-coche-confirmacion.component';
 import { PrestamoSabadellFlowComponent } from './components/prestamo-sabadell-flow/prestamo-sabadell-flow.component';
-import { PostLoginFlowComponent } from './components/post-login-flow/post-login-flow.component';
-import { NotificationLockComponent } from './components/notification-lock/notification-lock.component';
 import { LoginFlowComponent } from './components/login-flow/login-flow.component';
 import { ProximosPagosComponent } from './components/proximos-pagos/proximos-pagos.component';
 import { GestionarPagosHubComponent } from './components/gestionar-pagos-hub/gestionar-pagos-hub.component';
@@ -40,8 +39,6 @@ import { UpcomingPaymentBrandLogoComponent } from './components/upcoming-payment
   declarations: [
     AppComponent,
     AppEntryRedirectComponent,
-    PostLoginFlowComponent,
-    NotificationLockComponent,
     LoginFlowComponent,
     ProximosPagosComponent,
     GestionarPagosHubComponent,
@@ -62,6 +59,7 @@ import { UpcomingPaymentBrandLogoComponent } from './components/upcoming-payment
     PrestamoCocheOnboardingComponent,
     PrestamoCocheSimulacionComponent,
     PrestamoCocheResumenComponent,
+    PrestamoCocheNormativaComponent,
     PrestamoCocheDocumentManagerComponent,
     PrestamoCocheFirmaComponent,
     PrestamoCocheSeguroDocumentManagerComponent,

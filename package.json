@@ -1,17 +1,14 @@
 {
   "name": "money-confidence-tabs",
   "version": "1.0.0",
-  "description": "MoneyConfidence (tabs en inicio) — V1/V2: ver DEPLOY-V1-V2.md",
+  "description": "MoneyConfidence (tabs en inicio) — login → posición global",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "start:clean": "rm -rf .angular/cache && ng serve",
     "dev": "ng serve",
-    "start:v1": "ng serve",
-    "start:v2": "ng serve --configuration=v2",
     "build": "node scripts/vercel-build.cjs",
-    "build:v1": "ng build --configuration=production",
-    "build:v2": "ng build --configuration=v2-production",
+    "build:prod": "ng build --configuration=production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },

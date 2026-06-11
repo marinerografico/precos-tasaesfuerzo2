@@ -9,7 +9,7 @@ if [[ -z "${GITHUB_TOKEN:-}" ]]; then
   echo "Define GITHUB_TOKEN con tu Personal Access Token (repo)." >&2
   exit 1
 fi
-OWNER_REPO="gonzalezjuandi/MoneyConfidence-tabs"
+OWNER_REPO="marinerografico/BancSabadell-precos"
 URL="https://${GITHUB_TOKEN}@github.com/${OWNER_REPO}.git"
 git push -u "${URL}" main
 echo "Listo: main en origin."

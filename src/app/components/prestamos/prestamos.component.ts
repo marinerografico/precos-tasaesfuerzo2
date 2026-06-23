@@ -897,6 +897,13 @@ export class PrestamosComponent implements AfterViewInit, OnInit, OnDestroy {
     }
   }
 
+  onPrestamoCocheNormativaRejected(): void {
+    this.setPrestamoFlowView('normativa-unavailable');
+    if (typeof lucide !== 'undefined') {
+      setTimeout(() => lucide.createIcons(), 100);
+    }
+  }
+
   onPrestamoCocheNormativaAccepted(): void {
     // Mostrar loading antes de navegar al gestor documental
     this.setPrestamoFlowView('document-loading');

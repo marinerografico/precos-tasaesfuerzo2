@@ -36,6 +36,16 @@
     *ngIf="prestamoCocheView === 'normativa'"
     (back)="onPrestamoCocheNormativaBack()"
     (accepted)="onPrestamoCocheNormativaAccepted()"
+    (rejected)="onPrestamoCocheNormativaRejected()"
+    (viewOtherLoans)="onNormativaViewOtherLoans()"
+    (goToPosicionGlobal)="onNormativaGoToPosicionGlobal()"
+    (closeRequested)="onCloseRequestedPrestamoCoche()">
+  </app-prestamo-coche-normativa>
+
+  <!-- Préstamo Coche: KO normativa — préstamo no disponible -->
+  <app-prestamo-coche-normativa
+    *ngIf="prestamoCocheView === 'normativa-unavailable'"
+    initialScreen="unavailable"
     (viewOtherLoans)="onNormativaViewOtherLoans()"
     (goToPosicionGlobal)="onNormativaGoToPosicionGlobal()"
     (closeRequested)="onCloseRequestedPrestamoCoche()">

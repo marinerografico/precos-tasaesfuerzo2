@@ -1,6 +1,7 @@
 import {
   Component,
   EventEmitter,
+  Input,
   Output,
   AfterViewInit,
   OnDestroy,
@@ -20,8 +21,10 @@ type NormativaScreen = 'question' | 'unavailable' | 'redirect-spinner';
   styleUrls: ['./prestamo-coche-normativa.component.scss']
 })
 export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, OnDestroy {
+  @Input() initialScreen: NormativaScreen = 'question';
   @Output() back = new EventEmitter<void>();
   @Output() accepted = new EventEmitter<void>();
+  @Output() rejected = new EventEmitter<void>();
   @Output() closeRequested = new EventEmitter<void>();
   @Output() viewOtherLoans = new EventEmitter<void>();
   @Output() goToPosicionGlobal = new EventEmitter<void>();
@@ -35,6 +38,12 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
   constructor(private viewportScroller: ViewportScroller) {}
 
   ngOnInit(): void {
+    if (this.initialScreen !== 'question') {
+      this.screen = this.initialScreen;
+      if (this.initialScreen === 'unavailable') {
+        markPreconcedidoNormativaRechazado();
+      }
+    }
     this.scrollToTop();
   }
 
@@ -99,6 +108,7 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
   private showUnavailableScreen(): void {
     markPreconcedidoNormativaRechazado();
     this.screen = 'unavailable';
+    this.rejected.emit();
     this.scrollToTop();
     this.initIcons();
   }

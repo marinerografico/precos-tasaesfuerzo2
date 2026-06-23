@@ -3,6 +3,7 @@ export type PrestamoFlowViewSlug =
   | 'simulacion'
   | 'resumen'
   | 'normativa'
+  | 'normativa-no-disponible'
   | 'documentacion-carga'
   | 'documentacion'
   | 'firma'
@@ -19,6 +20,7 @@ export type PrestamoCocheInternalView =
   | 'simulation'
   | 'resumen'
   | 'normativa'
+  | 'normativa-unavailable'
   | 'document-loading'
   | 'document-manager'
   | 'firma'
@@ -37,6 +39,7 @@ const VIEW_TO_SLUG: Record<Exclude<PrestamoCocheInternalView, 'none' | 'simulati
   'sabadell-flow': 'sabadell',
   resumen: 'resumen',
   normativa: 'normativa',
+  'normativa-unavailable': 'normativa-no-disponible',
   'document-loading': 'documentacion-carga',
   'document-manager': 'documentacion',
   firma: 'firma',
@@ -72,6 +75,8 @@ export function slugToPrestamoFlowView(slug: string): PrestamoFlowRoutePatch | n
       return { view: 'resumen' };
     case 'normativa':
       return { view: 'normativa' };
+    case 'normativa-no-disponible':
+      return { view: 'normativa-unavailable' };
     case 'documentacion-carga':
       return { view: 'document-loading' };
     case 'documentacion':

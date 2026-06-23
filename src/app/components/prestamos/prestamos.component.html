@@ -8,6 +8,7 @@
   <!-- Préstamo Coche: Simulación -->
   <app-prestamo-coche-simulacion
     *ngIf="prestamoCocheView === 'simulation'"
+    [importeMax]="preconcedidoImporteMax"
     (back)="onPrestamoCocheBack()"
     (next)="onPrestamoCocheNext($event)"
     (closeRequested)="onCloseRequestedPrestamoCoche()">
@@ -16,6 +17,7 @@
   <!-- Préstamo Coche: Onboarding como drawer sobre la simulación -->
   <app-prestamo-coche-onboarding
     *ngIf="prestamoCocheView === 'simulation' && showPrestamoCocheOnboarding"
+    [importeMax]="preconcedidoImporteMax"
     (startSimulation)="onPrestamoCocheStartSimulation()"
     (closeRequested)="onPrestamoCocheStartSimulation()">
   </app-prestamo-coche-onboarding>
@@ -156,7 +158,7 @@
             <i data-lucide="user-check" class="w-5 h-5 stroke-[1.5]"></i>
           </div>
           <div class="loan-card-content">
-            <h3 class="loan-card-title">Laura, tienes un préstamo aprobado de hasta 45.000 €!</h3>
+            <h3 class="loan-card-title">Laura, tienes un préstamo aprobado de hasta {{ preconcedidoImporteMaxLabel }} €!</h3>
             <p class="loan-card-description">Contrátalo online y recíbelo en menos de 24 horas</p>
             <div class="loan-card-action">
               <button
@@ -255,7 +257,7 @@
               <div class="loan-type-simple-content">
                 <div class="loan-type-simple-main">
                   <span class="loan-type-simple-label">Compartido</span>
-                  <span class="loan-type-simple-limit loan-type-simple-limit-high">Hasta 45.000 €</span>
+                  <span class="loan-type-simple-limit loan-type-simple-limit-high">Hasta {{ preconcedidoImporteMaxLabel }} €</span>
                 </div>
                 <span class="loan-type-simple-name">María García y Luis González</span>
               </div>

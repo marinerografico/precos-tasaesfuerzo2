@@ -1,7 +1,19 @@
-import { Component, EventEmitter, Output, AfterViewInit, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, EventEmitter, Output, AfterViewInit, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { WizardStateService } from '../../services/wizard-state.service';
 import { isPreconcedidoEntryBlocked } from '../../constants/prestamo-preconcedido-entry';
-import { Observable } from 'rxjs';
+import {
+  formatPreconcedidoImporte,
+  PRECONCEDIDO_IMPORTE_MAX,
+  defaultPreconcedidoSimulacionImporte
+} from '../../constants/prestamo-preconcedido-offer';
+import {
+  PrestamoCocheInternalView,
+  PrestamoFlowViewSlug,
+  prestamoFlowViewToSlug,
+  slugToPrestamoFlowView
+} from '../../constants/prestamo-flow-routing';
+import { Observable, Subject } from 'rxjs';
+import { distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
 import { WizardState } from '../../services/wizard-state.service';
 
 declare var lucide: any;
@@ -11,7 +23,7 @@ declare var lucide: any;
   templateUrl: './prestamos.component.html',
   styleUrls: ['./prestamos.component.scss']
 })
-export class PrestamosComponent implements AfterViewInit, OnInit {
+export class PrestamosComponent implements AfterViewInit, OnInit, OnDestroy {
   @Output() next = new EventEmitter<void>();
   @Output() previous = new EventEmitter<void>();
   
@@ -23,20 +35,7 @@ export class PrestamosComponent implements AfterViewInit, OnInit {
   view: 'list' | 'simulation' = 'list';
   
   // Vista para Préstamo Coche; 'sabadell-flow' = flujo Préstamo Sabadell (no preconcedido)
-  prestamoCocheView:
-    | 'none'
-    | 'sabadell-flow'
-    | 'simulation'
-    | 'resumen'
-    | 'normativa'
-    | 'document-loading'
-    | 'document-manager'
-    | 'firma'
-    | 'seguro-loading'
-    | 'seguro-document-manager'
-    | 'seguro-firma'
-    | 'final-loading'
-    | 'confirmacion' = 'none';
+  prestamoCocheView: PrestamoCocheInternalView = 'none';
   showPrestamoCocheOnboarding = false;
   
   // Datos del préstamo para pasar al resumen
@@ -44,7 +43,7 @@ export class PrestamosComponent implements AfterViewInit, OnInit {
 
   // Estado de simulación
   loanType: 'individual' | 'compartido' = 'compartido';
-  amount = 35000;
+  amount = defaultPreconcedidoSimulacionImporte(PRECONCEDIDO_IMPORTE_MAX);
   termMonths = 96;
   monthlyPaymentDisplay = '250,00';
   showCalendar = false;
@@ -53,7 +52,20 @@ export class PrestamosComponent implements AfterViewInit, OnInit {
   amountError: string | null = null;
   minAmount = 3000;
   maxAmountIndividual = 8000;
-  maxAmountCompartido = 45000;
+  private readonly destroy$ = new Subject<void>();
+  private pausePrestamoFlowSync = false;
+
+  get preconcedidoImporteMax(): number {
+    return this.wizardState.getCurrentState().preconcedidoImporteMax ?? PRECONCEDIDO_IMPORTE_MAX;
+  }
+
+  get preconcedidoImporteMaxLabel(): string {
+    return formatPreconcedidoImporte(this.preconcedidoImporteMax);
+  }
+
+  get maxAmountCompartido(): number {
+    return this.preconcedidoImporteMax;
+  }
   get maxAmount(): number {
     return this.loanType === 'individual' ? this.maxAmountIndividual : this.maxAmountCompartido;
   }
@@ -106,43 +118,67 @@ export class PrestamosComponent implements AfterViewInit, OnInit {
     if (isPreconcedidoEntryBlocked()) {
       this.hidePreconcedidoCard = true;
     }
-    this.state$.subscribe(state => {
-      const previousHasUpdated = this.hasUpdatedPotential;
-      this.hasUpdatedPotential = state.hasUpdatedPotential || false;
-      
-      // Si acaba de actualizar el potencial o si ya lo tenía, recalcular
-      if (this.hasUpdatedPotential) {
-        this.calculateFinancialHealth();
-        // Reinicializar iconos si acaba de volver del flujo
-        if (!previousHasUpdated && typeof lucide !== 'undefined') {
-          setTimeout(() => {
-            lucide.createIcons();
-          }, 100);
-        }
-      }
 
-      if (isPreconcedidoEntryBlocked()) {
-        this.hidePreconcedidoCard = true;
-      }
+    this.state$
+      .pipe(
+        map(s => ({
+          step: s.currentStep,
+          slug: s.prestamoFlowSlug ?? null,
+          pendientePreconcedido: s.pendientePreconcedidoOnboarding ?? false,
+          pendienteSabadell: s.pendientePrestamoSabadellDesdePosicion ?? false,
+          importeMax: s.preconcedidoImporteMax ?? PRECONCEDIDO_IMPORTE_MAX,
+          hasUpdated: s.hasUpdatedPotential ?? false
+        })),
+        distinctUntilChanged(
+          (a, b) =>
+            a.step === b.step &&
+            a.slug === b.slug &&
+            a.pendientePreconcedido === b.pendientePreconcedido &&
+            a.pendienteSabadell === b.pendienteSabadell &&
+            a.importeMax === b.importeMax &&
+            a.hasUpdated === b.hasUpdated
+        ),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(state => {
+        const previousHasUpdated = this.hasUpdatedPotential;
+        this.hasUpdatedPotential = state.hasUpdated;
 
-      // Si viene del modal de Contratar o del banner "45.000 € al instante", abrir el flujo de préstamo con seguro (onboarding)
-      if (state.currentStep === 3 && this.view === 'list') {
-        const fromModal = sessionStorage.getItem('from-prestamo-modal');
-        if (fromModal === 'true' && !isPreconcedidoEntryBlocked()) {
-          sessionStorage.removeItem('from-prestamo-modal');
-          setTimeout(() => {
-            this.onIrAPrestamoCoche();
-          }, 100);
-        } else if (fromModal === 'true') {
-          sessionStorage.removeItem('from-prestamo-modal');
-        } else if (state.pendientePrestamoSabadellDesdePosicion) {
-          this.wizardState.clearPendientePrestamoSabadellDesdePosicion();
-          setTimeout(() => {
-            this.onIrAPrestamoSabadell();
-          }, 0);
+        if (this.hasUpdatedPotential) {
+          this.calculateFinancialHealth();
+          if (!previousHasUpdated && typeof lucide !== 'undefined') {
+            setTimeout(() => lucide.createIcons(), 100);
+          }
         }
-      }
-    });
+
+        if (isPreconcedidoEntryBlocked()) {
+          this.hidePreconcedidoCard = true;
+        }
+
+        if (state.step === 3) {
+          this.pausePrestamoFlowSync = true;
+          this.applyPrestamoFlowFromSlug(state.slug);
+          this.pausePrestamoFlowSync = false;
+
+          if (state.pendientePreconcedido && !isPreconcedidoEntryBlocked()) {
+            this.wizardState.clearPendientePreconcedidoOnboarding();
+            setTimeout(() => this.onIrAPrestamoCoche(), 0);
+          } else if (state.pendienteSabadell) {
+            this.wizardState.clearPendientePrestamoSabadellDesdePosicion();
+            setTimeout(() => this.onIrAPrestamoSabadell(), 0);
+          }
+        }
+
+        if (state.importeMax !== this.amount && this.prestamoCocheView === 'none') {
+          this.amount = defaultPreconcedidoSimulacionImporte(state.importeMax);
+          this.updateFormattedAmount();
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   ngAfterViewInit(): void {
@@ -710,25 +746,54 @@ export class PrestamosComponent implements AfterViewInit, OnInit {
     }
   }
 
+  private setPrestamoFlowView(
+    view: PrestamoCocheInternalView,
+    options?: { showOnboarding?: boolean }
+  ): void {
+    this.prestamoCocheView = view;
+    if (options?.showOnboarding !== undefined) {
+      this.showPrestamoCocheOnboarding = options.showOnboarding;
+    }
+    if (!this.pausePrestamoFlowSync) {
+      const slug = prestamoFlowViewToSlug(view, this.showPrestamoCocheOnboarding);
+      this.wizardState.setPrestamoFlowSlug(slug);
+    }
+  }
+
+  private applyPrestamoFlowFromSlug(slug: PrestamoFlowViewSlug | null): void {
+    if (!slug) {
+      this.prestamoCocheView = 'none';
+      this.showPrestamoCocheOnboarding = false;
+      return;
+    }
+    const patch = slugToPrestamoFlowView(slug);
+    if (!patch) {
+      return;
+    }
+    this.prestamoCocheView = patch.view;
+    if (patch.showOnboarding !== undefined) {
+      this.showPrestamoCocheOnboarding = patch.showOnboarding;
+    }
+  }
+
   // Métodos para Préstamo Coche
   /** Entrada desde la tarjeta «Préstamo Sabadell» (flujo manual: onboarding → simulación propia) */
   onIrAPrestamoSabadell(): void {
-    this.prestamoCocheView = 'sabadell-flow';
+    this.setPrestamoFlowView('sabadell-flow');
     if (typeof lucide !== 'undefined') {
       setTimeout(() => lucide.createIcons(), 0);
     }
   }
 
   onPrestamoSabadellFlowClose(): void {
-    this.prestamoCocheView = 'none';
+    this.setPrestamoFlowView('none');
     if (typeof lucide !== 'undefined') {
       setTimeout(() => lucide.createIcons(), 0);
     }
   }
 
   onIrAPrestamoCoche(): void {
-    this.prestamoCocheView = 'simulation';
-    this.showPrestamoCocheOnboarding = true;
+    this.setPrestamoFlowView('simulation', { showOnboarding: true });
     if (typeof lucide !== 'undefined') {
       setTimeout(() => {
         lucide.createIcons();
@@ -737,8 +802,7 @@ export class PrestamosComponent implements AfterViewInit, OnInit {
   }
 
   onPrestamoCocheStartSimulation(): void {
-    // Cerrar el onboarding tipo drawer y dejar solo el simulador
-    this.showPrestamoCocheOnboarding = false;
+    this.setPrestamoFlowView('simulation', { showOnboarding: false });
     if (typeof lucide !== 'undefined') {
       setTimeout(() => {
         lucide.createIcons();
@@ -747,9 +811,7 @@ export class PrestamosComponent implements AfterViewInit, OnInit {
   }
 
   onPrestamoCocheBack(): void {
-    // Desde el simulador o siguientes pantallas, volver al listado principal
-    this.prestamoCocheView = 'none';
-    this.showPrestamoCocheOnboarding = false;
+    this.setPrestamoFlowView('none', { showOnboarding: false });
     if (typeof lucide !== 'undefined') {
       setTimeout(() => {
         lucide.createIcons();
@@ -758,7 +820,7 @@ export class PrestamosComponent implements AfterViewInit, OnInit {
   }
 
   onPrestamoCocheClose(): void {
-    this.prestamoCocheView = 'none';
+    this.setPrestamoFlowView('none');
     if (typeof lucide !== 'undefined') {
       setTimeout(() => {
         lucide.createIcons();
@@ -785,7 +847,7 @@ export class PrestamosComponent implements AfterViewInit, OnInit {
       this.prestamoCocheData = data;
     }
     // Navegar al resumen
-    this.prestamoCocheView = 'resumen';
+    this.setPrestamoFlowView('resumen');
     if (typeof lucide !== 'undefined') {
       setTimeout(() => {
         lucide.createIcons();
@@ -794,7 +856,7 @@ export class PrestamosComponent implements AfterViewInit, OnInit {
   }
 
   onPrestamoCocheResumenBack(): void {
-    this.prestamoCocheView = 'simulation';
+    this.setPrestamoFlowView('simulation');
     if (typeof lucide !== 'undefined') {
       setTimeout(() => {
         lucide.createIcons();
@@ -805,21 +867,20 @@ export class PrestamosComponent implements AfterViewInit, OnInit {
   /** Desde normativa (KO 40%): tras spinner → onboarding Préstamo Sabadell (no preconcedido) */
   onNormativaViewOtherLoans(): void {
     this.hidePreconcedidoCard = true;
-    this.showPrestamoCocheOnboarding = false;
-    this.prestamoCocheView = 'sabadell-flow';
+    this.setPrestamoFlowView('sabadell-flow', { showOnboarding: false });
     this.initializeIcons();
   }
 
   /** Desde normativa: usuario declina y va a Posición Global */
   onNormativaGoToPosicionGlobal(): void {
     this.hidePreconcedidoCard = true;
-    this.prestamoCocheView = 'none';
+    this.setPrestamoFlowView('none');
     this.wizardState.setCurrentStep(1);
     this.initializeIcons();
   }
 
   onPrestamoCocheResumenNext(): void {
-    this.prestamoCocheView = 'normativa';
+    this.setPrestamoFlowView('normativa');
     if (typeof lucide !== 'undefined') {
       setTimeout(() => {
         lucide.createIcons();
@@ -828,7 +889,7 @@ export class PrestamosComponent implements AfterViewInit, OnInit {
   }
 
   onPrestamoCocheNormativaBack(): void {
-    this.prestamoCocheView = 'resumen';
+    this.setPrestamoFlowView('resumen');
     if (typeof lucide !== 'undefined') {
       setTimeout(() => {
         lucide.createIcons();
@@ -838,7 +899,7 @@ export class PrestamosComponent implements AfterViewInit, OnInit {
 
   onPrestamoCocheNormativaAccepted(): void {
     // Mostrar loading antes de navegar al gestor documental
-    this.prestamoCocheView = 'document-loading';
+    this.setPrestamoFlowView('document-loading');
     if (typeof lucide !== 'undefined') {
       setTimeout(() => {
         lucide.createIcons();
@@ -846,7 +907,7 @@ export class PrestamosComponent implements AfterViewInit, OnInit {
     }
     // Después de 7 segundos (tiempo suficiente para leer), navegar al gestor documental
     setTimeout(() => {
-      this.prestamoCocheView = 'document-manager';
+      this.setPrestamoFlowView('document-manager');
       if (typeof lucide !== 'undefined') {
         setTimeout(() => {
           lucide.createIcons();
@@ -857,7 +918,7 @@ export class PrestamosComponent implements AfterViewInit, OnInit {
 
   onPrestamoCocheDocumentManagerComplete(): void {
     // Navegar a la pantalla de firma
-    this.prestamoCocheView = 'firma';
+    this.setPrestamoFlowView('firma');
     if (typeof lucide !== 'undefined') {
       setTimeout(() => {
         lucide.createIcons();
@@ -867,7 +928,7 @@ export class PrestamosComponent implements AfterViewInit, OnInit {
 
   onPrestamoCocheDocumentManagerExit(): void {
     // Volver al resumen
-    this.prestamoCocheView = 'resumen';
+    this.setPrestamoFlowView('resumen');
     if (typeof lucide !== 'undefined') {
       setTimeout(() => {
         lucide.createIcons();
@@ -880,20 +941,20 @@ export class PrestamosComponent implements AfterViewInit, OnInit {
 
     if (hasInsurance) {
       // Con seguro: spinner de documentación del seguro → documentos seguro → firma seguro → loading final → confirmación
-      this.prestamoCocheView = 'seguro-loading';
+      this.setPrestamoFlowView('seguro-loading');
       const loadingTime = 5000 + Math.random() * 1000;
       setTimeout(() => {
-        this.prestamoCocheView = 'seguro-document-manager';
+        this.setPrestamoFlowView('seguro-document-manager');
         if (typeof lucide !== 'undefined') {
           setTimeout(() => lucide.createIcons(), 100);
         }
       }, loadingTime);
     } else {
       // Sin seguro: solo firma del préstamo → loading final → confirmación (sin info de seguro)
-      this.prestamoCocheView = 'final-loading';
+      this.setPrestamoFlowView('final-loading');
       const loadingTime = 3000 + Math.random() * 2000;
       setTimeout(() => {
-        this.prestamoCocheView = 'confirmacion';
+        this.setPrestamoFlowView('confirmacion');
         if (typeof lucide !== 'undefined') {
           setTimeout(() => lucide.createIcons(), 100);
         }
@@ -903,7 +964,7 @@ export class PrestamosComponent implements AfterViewInit, OnInit {
 
   onPrestamoCocheSeguroDocumentManagerComplete(): void {
     // Navegar a la firma del seguro
-    this.prestamoCocheView = 'seguro-firma';
+    this.setPrestamoFlowView('seguro-firma');
     if (typeof lucide !== 'undefined') {
       setTimeout(() => {
         lucide.createIcons();
@@ -913,7 +974,7 @@ export class PrestamosComponent implements AfterViewInit, OnInit {
 
   onPrestamoCocheSeguroDocumentManagerExit(): void {
     // Volver al resumen
-    this.prestamoCocheView = 'resumen';
+    this.setPrestamoFlowView('resumen');
     if (typeof lucide !== 'undefined') {
       setTimeout(() => {
         lucide.createIcons();
@@ -923,14 +984,14 @@ export class PrestamosComponent implements AfterViewInit, OnInit {
 
   onPrestamoCocheSeguroFirmaComplete(): void {
     // Mostrar spinner de carga final
-    this.prestamoCocheView = 'final-loading';
+    this.setPrestamoFlowView('final-loading');
     
     // Simular carga durante 3-5 segundos
     const loadingTime = 3000 + Math.random() * 2000;
     
     setTimeout(() => {
       // Navegar a la pantalla de confirmación
-      this.prestamoCocheView = 'confirmacion';
+      this.setPrestamoFlowView('confirmacion');
       if (typeof lucide !== 'undefined') {
         setTimeout(() => {
           lucide.createIcons();
@@ -941,7 +1002,7 @@ export class PrestamosComponent implements AfterViewInit, OnInit {
 
   onPrestamoCocheSeguroFirmaBack(): void {
     // Volver al gestor documental del seguro
-    this.prestamoCocheView = 'seguro-document-manager';
+    this.setPrestamoFlowView('seguro-document-manager');
     if (typeof lucide !== 'undefined') {
       setTimeout(() => {
         lucide.createIcons();
@@ -955,7 +1016,7 @@ export class PrestamosComponent implements AfterViewInit, OnInit {
       this.wizardState.markLoanCompleted(this.prestamoCocheData.amount);
     }
     // Cerrar flujo de préstamo y llevar al inicio (Posición Global)
-    this.prestamoCocheView = 'none';
+    this.setPrestamoFlowView('none');
     this.wizardState.setCurrentStep(1);
   }
 
@@ -964,7 +1025,7 @@ export class PrestamosComponent implements AfterViewInit, OnInit {
     if (this.prestamoCocheData && this.prestamoCocheData.amount) {
       this.wizardState.markLoanCompleted(this.prestamoCocheData.amount);
     }
-    this.prestamoCocheView = 'none';
+    this.setPrestamoFlowView('none');
     this.wizardState.setCurrentStep(1);
     // Señal para abrir directamente la vista de cuentas desde Posición Global (opcional)
     sessionStorage.setItem('open-accounts-from-loan', 'true');
@@ -972,7 +1033,7 @@ export class PrestamosComponent implements AfterViewInit, OnInit {
 
   onPrestamoCocheFirmaBack(): void {
     // Volver al gestor documental
-    this.prestamoCocheView = 'document-manager';
+    this.setPrestamoFlowView('document-manager');
     if (typeof lucide !== 'undefined') {
       setTimeout(() => {
         lucide.createIcons();

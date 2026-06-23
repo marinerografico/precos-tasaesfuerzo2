@@ -7,6 +7,7 @@ import { WizardComponent } from './components/wizard/wizard.component';
 const routes: Routes = [
   { path: '', pathMatch: 'full', component: AppEntryRedirectComponent },
   { path: 'acceso', component: LoginFlowComponent },
+  { path: 'app/:pantalla/:subPantalla', component: WizardComponent },
   { path: 'app/:pantalla', component: WizardComponent },
   { path: '**', component: AppEntryRedirectComponent }
 ];

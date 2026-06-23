@@ -1,4 +1,8 @@
 import { EntryScreen, WizardState } from './services/wizard-state.service';
+import {
+  PrestamoFlowViewSlug,
+  slugToPrestamoFlowView
+} from './constants/prestamo-flow-routing';
 
 /** Segmento de URL bajo `/app/...` coherente con el paso del wizard */
 export function wizardStateToSlug(state: WizardState): string {
@@ -17,6 +21,19 @@ export function wizardStateToSlug(state: WizardState): string {
     10: 'gestionar-pagos'
   };
   return byStep[state.currentStep] ?? 'posicion-global';
+}
+
+/** Comandos de navegación (`/app/...`) incluyendo sub-ruta del flujo de préstamo */
+export function wizardStateToNavigateCommands(state: WizardState): string[] {
+  const slug = wizardStateToSlug(state);
+  if (state.currentStep === 3 && state.prestamoFlowSlug) {
+    return ['/app', slug, state.prestamoFlowSlug];
+  }
+  return ['/app', slug];
+}
+
+export function isPrestamoFlowSlug(slug: string): slug is PrestamoFlowViewSlug {
+  return slugToPrestamoFlowView(slug) !== null;
 }
 
 export function slugToWizardPatch(

@@ -1,6 +1,11 @@
-import { Component, EventEmitter, Output, AfterViewInit, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, EventEmitter, Input, Output, AfterViewInit, OnInit, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { PrestamoCocheResumenData } from '../prestamo-coche-resumen/prestamo-coche-resumen.component';
 import { PRESTAMO_FAQS, SEGURO_FAQS } from '../../constants/prestamo-coche-faq';
+import {
+  defaultPreconcedidoSimulacionImporte,
+  PRECONCEDIDO_IMPORTE_MAX,
+  PRECONCEDIDO_IMPORTE_MIN
+} from '../../constants/prestamo-preconcedido-offer';
 
 declare var lucide: any;
 
@@ -9,7 +14,8 @@ declare var lucide: any;
   templateUrl: './prestamo-coche-simulacion.component.html',
   styleUrls: ['./prestamo-coche-simulacion.component.scss']
 })
-export class PrestamoCocheSimulacionComponent implements OnInit, AfterViewInit {
+export class PrestamoCocheSimulacionComponent implements OnInit, OnChanges, AfterViewInit {
+  @Input() importeMax = PRECONCEDIDO_IMPORTE_MAX;
   @Output() back = new EventEmitter<void>();
   @Output() next = new EventEmitter<PrestamoCocheResumenData>();
   @Output() closeRequested = new EventEmitter<void>();
@@ -19,10 +25,10 @@ export class PrestamoCocheSimulacionComponent implements OnInit, AfterViewInit {
   /** Oculta módulo de seguro y flujos asociados en simulación (reactivar: true). */
   showInsuranceModule = false;
 
-  // Estado del formulario (referencia captura: Mín. 3.000 € — Máx. 40.000 €)
-  minAmount = 3000;
-  maxAmount = 40000;
-  amount = this.minAmount + Math.round(0.75 * (this.maxAmount - this.minAmount) / 500) * 500;
+  // Estado del formulario
+  minAmount = PRECONCEDIDO_IMPORTE_MIN;
+  maxAmount = PRECONCEDIDO_IMPORTE_MAX;
+  amount = defaultPreconcedidoSimulacionImporte(this.maxAmount);
   termMonths = 96;
   monthlyPayment = 250.00;
   hasInsurance = false;
@@ -74,7 +80,26 @@ export class PrestamoCocheSimulacionComponent implements OnInit, AfterViewInit {
   loadingInsuranceQuote = false;
 
   ngOnInit(): void {
+    this.applyImporteMax(this.importeMax);
     this.updateMonthlyPayment();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['importeMax'] && !changes['importeMax'].firstChange) {
+      this.applyImporteMax(changes['importeMax'].currentValue);
+      this.updateMonthlyPayment();
+    }
+  }
+
+  private applyImporteMax(importeMax: number): void {
+    const max = importeMax || PRECONCEDIDO_IMPORTE_MAX;
+    this.maxAmount = max;
+    this.amount = defaultPreconcedidoSimulacionImporte(max);
+    this.amountInputValue = this.amount.toLocaleString('es-ES', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
+    this.amountError = null;
   }
 
   ngAfterViewInit(): void {

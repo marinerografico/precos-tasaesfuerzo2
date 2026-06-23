@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { PRECONCEDIDO_IMPORTE_MAX } from '../constants/prestamo-preconcedido-offer';
+import { PrestamoFlowViewSlug } from '../constants/prestamo-flow-routing';
 
 export interface FinancialProfile {
   ingresos: number;
@@ -197,6 +199,12 @@ export interface WizardState {
    * Se consume al ejecutarse (no usar sessionStorage: evita carreras con la navegación).
    */
   pendientePrestamoSabadellDesdePosicion?: boolean;
+  /** Sub-ruta bajo `/app/prestamos/...` (null = listado) */
+  prestamoFlowSlug?: PrestamoFlowViewSlug | null;
+  /** Importe máximo preconcedido ofrecido (Posición global → drawer → simulador) */
+  preconcedidoImporteMax?: number;
+  /** Al entrar desde Posición global / Contratar: abrir onboarding del preconcedido */
+  pendientePreconcedidoOnboarding?: boolean;
 }
 
 @Injectable({
@@ -221,6 +229,9 @@ export class WizardStateService {
     selectedUpcomingPaymentId: null,
     gestionarPagosDirectoSuscripciones: false,
     gestionarPagosAbrirSuscripcionId: null,
+    preconcedidoImporteMax: PRECONCEDIDO_IMPORTE_MAX,
+    prestamoFlowSlug: null,
+    pendientePreconcedidoOnboarding: false,
     perfilFinanciero: {
       ingresos: 0,
       gastos: 0,
@@ -259,7 +270,70 @@ export class WizardStateService {
     if (step !== 3 && currentState.pendientePrestamoSabadellDesdePosicion) {
       next.pendientePrestamoSabadellDesdePosicion = false;
     }
+    if (step !== 3) {
+      next.prestamoFlowSlug = null;
+    }
     this.stateSubject.next(next);
+  }
+
+  applyPrestamoFlowFromUrl(slug: PrestamoFlowViewSlug | null): void {
+    const currentState = this.getCurrentState();
+    this.stateSubject.next({
+      ...currentState,
+      currentStep: 3,
+      prestamoFlowSlug: slug,
+      pendientePrestamoSabadellDesdePosicion: false
+    });
+  }
+
+  setPrestamoFlowSlug(slug: PrestamoFlowViewSlug | null): void {
+    const currentState = this.getCurrentState();
+    if (currentState.currentStep !== 3) {
+      return;
+    }
+    if (currentState.prestamoFlowSlug === slug) {
+      return;
+    }
+    this.stateSubject.next({
+      ...currentState,
+      prestamoFlowSlug: slug
+    });
+  }
+
+  /**
+   * Banner / entry preconcedido en Posición global → Préstamos con onboarding y mismo importe máximo.
+   */
+  openPreconcedidoDesdePosicionGlobal(
+    importeMax: number = PRECONCEDIDO_IMPORTE_MAX
+  ): void {
+    const currentState = this.getCurrentState();
+    this.stateSubject.next({
+      ...currentState,
+      currentStep: 3,
+      preconcedidoImporteMax: importeMax,
+      pendientePreconcedidoOnboarding: true,
+      prestamoFlowSlug: null,
+      pendientePrestamoSabadellDesdePosicion: false
+    });
+  }
+
+  clearPendientePreconcedidoOnboarding(): void {
+    const currentState = this.getCurrentState();
+    if (!currentState.pendientePreconcedidoOnboarding) {
+      return;
+    }
+    this.stateSubject.next({
+      ...currentState,
+      pendientePreconcedidoOnboarding: false
+    });
+  }
+
+  setPreconcedidoImporteMax(importeMax: number): void {
+    const currentState = this.getCurrentState();
+    this.stateSubject.next({
+      ...currentState,
+      preconcedidoImporteMax: importeMax
+    });
   }
 
   /**

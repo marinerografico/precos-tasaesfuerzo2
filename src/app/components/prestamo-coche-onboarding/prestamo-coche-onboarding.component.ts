@@ -1,5 +1,9 @@
-import { ChangeDetectorRef, Component, EventEmitter, Output, AfterViewInit } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, Output, AfterViewInit } from '@angular/core';
 import { PRESTAMO_FAQS, SEGURO_FAQS } from '../../constants/prestamo-coche-faq';
+import {
+  formatPreconcedidoImporte,
+  PRECONCEDIDO_IMPORTE_MAX
+} from '../../constants/prestamo-preconcedido-offer';
 
 declare var lucide: any;
 
@@ -11,6 +15,7 @@ declare var lucide: any;
 export class PrestamoCocheOnboardingComponent implements AfterViewInit {
   constructor(private cdr: ChangeDetectorRef) {}
 
+  @Input() importeMax = PRECONCEDIDO_IMPORTE_MAX;
   @Output() startSimulation = new EventEmitter<void>();
   @Output() close = new EventEmitter<void>();
   @Output() closeRequested = new EventEmitter<void>();
@@ -25,6 +30,10 @@ export class PrestamoCocheOnboardingComponent implements AfterViewInit {
   drawerExpanded = true;
   /** Acordeón cerrado al abrir para dejar hueco al texto legal */
   howToExpanded = false;
+
+  get importeMaxLabel(): string {
+    return formatPreconcedidoImporte(this.importeMax);
+  }
 
   ngAfterViewInit(): void {
     if (typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches) {

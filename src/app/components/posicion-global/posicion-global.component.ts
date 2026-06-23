@@ -9,6 +9,10 @@ import {
 } from '../../services/wizard-state.service';
 
 import { isPreconcedidoEntryBlocked } from '../../constants/prestamo-preconcedido-entry';
+import {
+  formatPreconcedidoImporte,
+  PRECONCEDIDO_IMPORTE_MAX
+} from '../../constants/prestamo-preconcedido-offer';
 
 declare var lucide: any;
 
@@ -23,6 +27,8 @@ const INITIAL_30D_COMBINED = combineUpcomingAndSubscriptions30d(
   styleUrls: ['./posicion-global.component.scss']
 })
 export class PosicionGlobalComponent implements AfterViewInit, OnDestroy, OnInit {
+  readonly preconcedidoImporteMaxLabel = formatPreconcedidoImporte(PRECONCEDIDO_IMPORTE_MAX);
+
   @Output() next = new EventEmitter<void>();
   @Output() goToPotencialFinanciero = new EventEmitter<void>();
   private iconsInitialized = false;
@@ -339,8 +345,7 @@ export class PosicionGlobalComponent implements AfterViewInit, OnDestroy, OnInit
     if (isPreconcedidoEntryBlocked()) {
       return;
     }
-    this.wizardState.setCurrentStep(3);
-    sessionStorage.setItem('from-prestamo-modal', 'true');
+    this.wizardState.openPreconcedidoDesdePosicionGlobal(PRECONCEDIDO_IMPORTE_MAX);
   }
 
   onIrAPrestamoSabadellDesdePosicion(): void {

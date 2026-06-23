@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Output, AfterViewInit, OnInit, HostListener } from '@angular/core';
 import { WizardStateService } from '../../services/wizard-state.service';
 import { isPreconcedidoEntryBlocked } from '../../constants/prestamo-preconcedido-entry';
+import { PRECONCEDIDO_IMPORTE_MAX } from '../../constants/prestamo-preconcedido-offer';
 
 declare var lucide: any;
 
@@ -26,7 +27,7 @@ export class ContratarComponent implements AfterViewInit, OnInit {
     titulo: 'Tu préstamo, sin esperas y sin papeleo',
     descripcion: 'Tienes un préstamo preconcedido listo cuando lo necesites. Sin complicaciones, sin esperas y con el respaldo de Banco Sabadell.',
     importeMin: 3000,
-    importeMax: 60000,
+    importeMax: PRECONCEDIDO_IMPORTE_MAX,
     caracteristicas: [
       {
         icono: 'file-check',
@@ -104,9 +105,10 @@ export class ContratarComponent implements AfterViewInit, OnInit {
   onIrASimulador(): void {
     this.onCerrarModal();
     if (!isPreconcedidoEntryBlocked()) {
-      sessionStorage.setItem('from-prestamo-modal', 'true');
+      this.wizardState.openPreconcedidoDesdePosicionGlobal(PRECONCEDIDO_IMPORTE_MAX);
+    } else {
+      this.wizardState.setCurrentStep(3);
     }
-    this.wizardState.setCurrentStep(3);
   }
 
   onVerFAQ(): void {
@@ -118,7 +120,7 @@ export class ContratarComponent implements AfterViewInit, OnInit {
 
   onIrAPrestamos(): void {
     if (!isPreconcedidoEntryBlocked()) {
-      sessionStorage.setItem('from-prestamo-modal', 'true');
+      this.wizardState.openPreconcedidoDesdePosicionGlobal(PRECONCEDIDO_IMPORTE_MAX);
     }
     this.next.emit();
   }

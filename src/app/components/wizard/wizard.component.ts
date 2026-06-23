@@ -6,7 +6,12 @@ import {
   WizardStateService,
   WizardState
 } from '../../services/wizard-state.service';
-import { slugToWizardPatch, wizardStateToSlug } from '../../app-routing.constants';
+import {
+  isPrestamoFlowSlug,
+  slugToWizardPatch,
+  wizardStateToNavigateCommands,
+  wizardStateToSlug
+} from '../../app-routing.constants';
 
 @Component({
   selector: 'app-wizard',
@@ -31,66 +36,40 @@ export class WizardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    const initialSlug = this.route.snapshot.paramMap.get('pantalla');
-    if (initialSlug) {
-      const patch = slugToWizardPatch(initialSlug);
-      if (!patch) {
-        this.router.navigate(['/app', 'posicion-global'], { replaceUrl: true });
-      } else {
-        const expected = wizardStateToSlug(this.wizardState.getCurrentState());
-        if (initialSlug !== expected) {
-          this.pauseUrlSync = true;
-          this.wizardState.setCurrentStep(patch.step);
-          if (patch.entryScreen) {
-            this.wizardState.setEntryScreen(patch.entryScreen);
-          }
-          queueMicrotask(() => {
-            this.pauseUrlSync = false;
-          });
-        }
-      }
-    }
+    this.applyRouteToState(this.route.snapshot.paramMap.get('pantalla'), this.route.snapshot.paramMap.get('subPantalla'));
 
     this.route.paramMap
       .pipe(
-        map(pm => pm.get('pantalla')),
-        filter((slug): slug is string => !!slug),
-        distinctUntilChanged(),
+        map(pm => ({
+          pantalla: pm.get('pantalla'),
+          subPantalla: pm.get('subPantalla')
+        })),
+        distinctUntilChanged((a, b) => a.pantalla === b.pantalla && a.subPantalla === b.subPantalla),
         takeUntil(this.destroy$)
       )
-      .subscribe(slug => {
-        const expected = wizardStateToSlug(this.wizardState.getCurrentState());
-        if (slug === expected) {
-          return;
-        }
-        const patch = slugToWizardPatch(slug);
-        if (!patch) {
-          this.router.navigate(['/app', 'posicion-global'], { replaceUrl: true });
-          return;
-        }
-        this.pauseUrlSync = true;
-        this.wizardState.setCurrentStep(patch.step);
-        if (patch.entryScreen) {
-          this.wizardState.setEntryScreen(patch.entryScreen);
-        }
-        queueMicrotask(() => {
-          this.pauseUrlSync = false;
-        });
+      .subscribe(({ pantalla, subPantalla }) => {
+        this.applyRouteToState(pantalla, subPantalla);
       });
 
     this.state$
       .pipe(
-        map(s => wizardStateToSlug(s)),
+        map(s => wizardStateToNavigateCommands(s).join('\0')),
         distinctUntilChanged(),
         takeUntil(this.destroy$)
       )
-      .subscribe(slug => {
+      .subscribe(pathKey => {
         if (this.pauseUrlSync) {
           return;
         }
-        const urlSlug = this.route.snapshot.paramMap.get('pantalla');
-        if (urlSlug !== slug) {
-          this.router.navigate(['/app', slug]);
+        const state = this.wizardState.getCurrentState();
+        const commands = wizardStateToNavigateCommands(state);
+        const currentPantalla = this.route.snapshot.paramMap.get('pantalla');
+        const currentSub = this.route.snapshot.paramMap.get('subPantalla');
+        const targetSub = commands.length > 2 ? commands[2] : null;
+        const pantallaMatches = currentPantalla === commands[1];
+        const subMatches = (currentSub ?? null) === (targetSub ?? null);
+        if (!pantallaMatches || !subMatches) {
+          this.router.navigate(commands);
         }
       });
 
@@ -121,4 +100,36 @@ export class WizardComponent implements OnInit, OnDestroy {
     this.wizardState.setCurrentStep(step);
   }
 
+  private applyRouteToState(pantalla: string | null, subPantalla: string | null): void {
+    if (!pantalla) {
+      return;
+    }
+    const patch = slugToWizardPatch(pantalla);
+    if (!patch) {
+      void this.router.navigate(['/app', 'posicion-global'], { replaceUrl: true });
+      return;
+    }
+
+    const state = this.wizardState.getCurrentState();
+    const expectedSlug = wizardStateToSlug(state);
+    const expectedSub = state.currentStep === 3 ? state.prestamoFlowSlug ?? null : null;
+    const routeSub = subPantalla && isPrestamoFlowSlug(subPantalla) ? subPantalla : null;
+
+    if (pantalla === expectedSlug && routeSub === expectedSub) {
+      return;
+    }
+
+    this.pauseUrlSync = true;
+    if (pantalla === 'prestamos') {
+      this.wizardState.applyPrestamoFlowFromUrl(routeSub);
+    } else {
+      this.wizardState.setCurrentStep(patch.step);
+      if (patch.entryScreen) {
+        this.wizardState.setEntryScreen(patch.entryScreen);
+      }
+    }
+    queueMicrotask(() => {
+      this.pauseUrlSync = false;
+    });
+  }
 }

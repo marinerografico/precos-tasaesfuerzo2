@@ -1,6 +1,7 @@
 import {
   Component,
   EventEmitter,
+  HostListener,
   Input,
   Output,
   AfterViewInit,
@@ -9,6 +10,14 @@ import {
 } from '@angular/core';
 import { ViewportScroller } from '@angular/common';
 import { markPreconcedidoNormativaRechazado } from '../../constants/prestamo-preconcedido-entry';
+import {
+  NormativaVariant,
+  NormativaEjemploTooltip,
+  NORMATIVA_INGRESOS_DEFAULT,
+  buildNormativaEjemploTooltip,
+  calcularDisponiblesNormativa,
+  formatNormativaEuro
+} from '../../constants/normativa-disponibles';
 
 declare var lucide: any;
 
@@ -21,6 +30,9 @@ type NormativaScreen = 'question' | 'unavailable' | 'redirect-spinner';
   styleUrls: ['./prestamo-coche-normativa.component.scss']
 })
 export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, OnDestroy {
+  @Input() variant: NormativaVariant = 'classic';
+  @Input() ingresosMensuales = NORMATIVA_INGRESOS_DEFAULT;
+  @Input() cuotaMensual = 0;
   @Input() initialScreen: NormativaScreen = 'question';
   @Output() back = new EventEmitter<void>();
   @Output() accepted = new EventEmitter<void>();
@@ -32,10 +44,39 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
   screen: NormativaScreen = 'question';
   paysElsewhereAnswer: NormativaAnswer = null;
   secondAnswer: NormativaAnswer = null;
+  showEjemploTooltip = false;
 
   private otherProductRedirectTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor(private viewportScroller: ViewportScroller) {}
+
+  get isTangibleVariant(): boolean {
+    return this.variant === 'tangible';
+  }
+
+  get ingresosEfectivos(): number {
+    return this.ingresosMensuales > 0 ? this.ingresosMensuales : NORMATIVA_INGRESOS_DEFAULT;
+  }
+
+  get disponiblesEuros(): number {
+    return calcularDisponiblesNormativa(this.ingresosEfectivos, this.cuotaMensual);
+  }
+
+  get ingresosLabel(): string {
+    return formatNormativaEuro(this.ingresosEfectivos);
+  }
+
+  get cuotaMensualLabel(): string {
+    return formatNormativaEuro(this.cuotaMensual);
+  }
+
+  get disponiblesLabel(): string {
+    return formatNormativaEuro(this.disponiblesEuros);
+  }
+
+  get ejemploTooltip(): NormativaEjemploTooltip {
+    return buildNormativaEjemploTooltip(this.ingresosEfectivos, this.cuotaMensual);
+  }
 
   ngOnInit(): void {
     if (this.initialScreen !== 'question') {
@@ -72,6 +113,35 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
     return this.secondAnswer !== null;
   }
 
+  toggleEjemploTooltip(event: Event): void {
+    event.stopPropagation();
+    this.showEjemploTooltip = !this.showEjemploTooltip;
+    if (this.showEjemploTooltip) {
+      setTimeout(() => this.initIcons(), 0);
+    }
+  }
+
+  closeEjemploTooltip(): void {
+    this.showEjemploTooltip = false;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    if (
+      target.closest('.normativa-tooltip-trigger') ||
+      target.closest('.normativa-tooltip-panel')
+    ) {
+      return;
+    }
+    this.showEjemploTooltip = false;
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    this.showEjemploTooltip = false;
+  }
+
   onBack(): void {
     this.back.emit();
   }
@@ -84,6 +154,7 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
     this.paysElsewhereAnswer = answer;
     if (answer === 'no') {
       this.secondAnswer = null;
+      this.closeEjemploTooltip();
     }
   }
 

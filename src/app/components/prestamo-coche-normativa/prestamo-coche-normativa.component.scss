@@ -70,6 +70,137 @@
   font-weight: 700;
   color: #000000;
   line-height: 1.45;
+
+  &--with-tooltip {
+    margin-bottom: 0;
+    flex: 1;
+  }
+}
+
+.normativa-question-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.normativa-summary {
+  margin-bottom: 1.25rem;
+  padding: 1rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+}
+
+.normativa-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.4;
+
+  & + & {
+    margin-top: 0.5rem;
+  }
+
+  &--highlight {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #e2e8f0;
+    font-weight: 700;
+    color: #0f172a;
+  }
+}
+
+.normativa-summary-label {
+  color: #64748b;
+}
+
+.normativa-summary-value {
+  color: #0f172a;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.normativa-tooltip-trigger {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  margin-top: -0.125rem;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: var(--bs-color-primary, #006dff);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover,
+  &[aria-expanded='true'] {
+    background: #e0f0ff;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--bs-color-primary, #006dff);
+    outline-offset: 2px;
+  }
+}
+
+.normativa-tooltip-trigger-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.normativa-tooltip-panel {
+  margin: -0.75rem 0 1.25rem;
+  padding: 0.875rem 1rem;
+  background: #0f172a;
+  color: #f8fafc;
+  border-radius: 0.75rem;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  animation: normativaTooltipIn 0.2s ease;
+}
+
+@keyframes normativaTooltipIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.normativa-tooltip-title {
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #94a3b8;
+}
+
+.normativa-tooltip-line {
+  margin: 0 0 0.35rem;
+}
+
+.normativa-tooltip-result {
+  margin: 0.5rem 0;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.35);
+  color: #e2e8f0;
+}
+
+.normativa-tooltip-hint {
+  margin: 0.5rem 0 0;
+  font-size: 0.75rem;
+  color: #94a3b8;
 }
 
 .normativa-options {

@@ -1,4 +1,5 @@
 /** Producción: login → posición global. */
 export const environment = {
-  production: true
+  production: true,
+  normativaVariant: 'tangible' as const
 };

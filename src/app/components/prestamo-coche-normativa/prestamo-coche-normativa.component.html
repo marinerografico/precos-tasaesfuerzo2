@@ -66,9 +66,72 @@
         *ngIf="showSecondQuestion"
         class="normativa-question-block normativa-question-block--reveal"
         aria-labelledby="normativa-q2">
-        <p id="normativa-q2" class="normativa-question">
-          Después de pagar esas cuotas, ¿te queda disponible más del 40% de tus ingresos totales al mes?
-        </p>
+        <div
+          *ngIf="isTangibleVariant"
+          class="normativa-summary"
+          aria-label="Resumen de tu capacidad">
+          <div class="normativa-summary-row">
+            <span class="normativa-summary-label">Ingresos mensuales</span>
+            <span class="normativa-summary-value">{{ ingresosLabel }} €</span>
+          </div>
+          <div class="normativa-summary-row">
+            <span class="normativa-summary-label">Cuota de este préstamo</span>
+            <span class="normativa-summary-value">{{ cuotaMensualLabel }} €</span>
+          </div>
+          <div class="normativa-summary-row normativa-summary-row--highlight">
+            <span class="normativa-summary-label">Disponibles (X)</span>
+            <span class="normativa-summary-value">{{ disponiblesLabel }} €</span>
+          </div>
+        </div>
+
+        <div class="normativa-question-header">
+          <p id="normativa-q2" class="normativa-question normativa-question--with-tooltip">
+            <ng-container *ngIf="!isTangibleVariant">
+              Después de pagar esas cuotas, ¿te queda disponible más del 40% de tus ingresos totales al mes?
+            </ng-container>
+            <ng-container *ngIf="isTangibleVariant">
+              Después de pagar esas cuotas, ¿te queda disponible más de {{ disponiblesLabel }} € de tus ingresos totales al mes?
+            </ng-container>
+          </p>
+          <button
+            *ngIf="isTangibleVariant"
+            type="button"
+            class="normativa-tooltip-trigger"
+            (click)="toggleEjemploTooltip($event)"
+            [attr.aria-expanded]="showEjemploTooltip"
+            aria-controls="normativa-ejemplo-tooltip"
+            aria-label="Ver ejemplo de cómo comprobarlo">
+            <i data-lucide="info" class="normativa-tooltip-trigger-icon" aria-hidden="true"></i>
+          </button>
+        </div>
+
+        <div
+          *ngIf="isTangibleVariant && showEjemploTooltip"
+          id="normativa-ejemplo-tooltip"
+          class="normativa-tooltip-panel"
+          role="tooltip"
+          (click)="$event.stopPropagation()">
+          <p class="normativa-tooltip-title">Ejemplo sencillo</p>
+          <p class="normativa-tooltip-line">
+            Ingresos: <strong>{{ ejemploTooltip.ingresosLabel }} €</strong>
+          </p>
+          <p class="normativa-tooltip-line">
+            Cuotas en otras entidades (ej.): <strong>{{ ejemploTooltip.cuotasExternasEjemploLabel }} €</strong>
+          </p>
+          <p class="normativa-tooltip-line">
+            Tras pagarlas: <strong>{{ ejemploTooltip.trasExternasLabel }} €</strong>
+          </p>
+          <p class="normativa-tooltip-line">
+            Necesitas más de <strong>{{ ejemploTooltip.disponiblesLabel }} €</strong> disponibles.
+          </p>
+          <p class="normativa-tooltip-result" *ngIf="ejemploTooltip.puedeResponderSi">
+            Como {{ ejemploTooltip.trasExternasLabel }} € es mayor que {{ ejemploTooltip.disponiblesLabel }} €, podrías responder <strong>Sí</strong>.
+          </p>
+          <p class="normativa-tooltip-hint">
+            Haz el mismo cálculo con tus cuotas reales antes de responder.
+          </p>
+        </div>
+
         <div class="normativa-options" role="radiogroup" aria-labelledby="normativa-q2">
           <label class="normativa-option" [class.normativa-option--selected]="secondAnswer === 'yes'">
             <input
@@ -97,8 +160,11 @@
 
       <p class="normativa-info">
         <i data-lucide="info" class="normativa-info-icon" aria-hidden="true"></i>
-        <span>
+        <span *ngIf="!isTangibleVariant">
           Por normativa, necesitamos confirmar que puedes asumir todas tus cuotas, incluido este préstamo, sin superar el 40% de tus ingresos netos.
+        </span>
+        <span *ngIf="isTangibleVariant">
+          Resta tus cuotas de otras entidades a tus ingresos. Si lo que te queda es mayor que {{ disponiblesLabel }} €, podrás asumir también la cuota de {{ cuotaMensualLabel }} € de este préstamo.
         </span>
       </p>
     </main>
@@ -125,8 +191,14 @@
         <i data-lucide="x" class="loan-unavailable-icon-x"></i>
       </div>
       <h1 id="loan-unavailable-title" class="loan-unavailable-title">Este préstamo no está disponible</h1>
-      <p class="loan-unavailable-lead">
+      <p class="loan-unavailable-lead" *ngIf="!isTangibleVariant">
         Según la información indicada, <strong>las cuotas de tus financiaciones superarían el 40% de tus ingresos netos.</strong>
+      </p>
+      <p class="loan-unavailable-lead" *ngIf="isTangibleVariant">
+        Con una cuota de <strong>{{ cuotaMensualLabel }} €</strong>, necesitas que, después de pagar tus cuotas en otras entidades, te quede disponible más de <strong>{{ disponiblesLabel }} €</strong> de tus <strong>{{ ingresosLabel }} €</strong> de ingresos totales al mes.
+      </p>
+      <p class="loan-unavailable-muted" *ngIf="isTangibleVariant">
+        Según lo que nos has indicado, no cumples ese margen para afrontar esta nueva deuda.
       </p>
       <p class="loan-unavailable-muted">
         Si necesitas ayuda o quieres revisar otras opciones, puedes acudir a tu oficina o consultar otro préstamo disponible.

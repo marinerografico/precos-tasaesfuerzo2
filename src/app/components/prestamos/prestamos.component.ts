@@ -15,6 +15,11 @@ import {
 import { Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
 import { WizardState } from '../../services/wizard-state.service';
+import { environment } from '../../../environments/environment';
+import {
+  NormativaVariant,
+  NORMATIVA_INGRESOS_DEFAULT
+} from '../../constants/normativa-disponibles';
 
 declare var lucide: any;
 
@@ -66,6 +71,21 @@ export class PrestamosComponent implements AfterViewInit, OnInit, OnDestroy {
   get maxAmountCompartido(): number {
     return this.preconcedidoImporteMax;
   }
+
+  get normativaVariant(): NormativaVariant {
+    return environment.normativaVariant ?? 'classic';
+  }
+
+  get normativaIngresosMensuales(): number {
+    const ingresos = this.wizardState.getCurrentState().perfilFinanciero?.ingresos ?? 0;
+    return ingresos > 0 ? ingresos : NORMATIVA_INGRESOS_DEFAULT;
+  }
+
+  get normativaCuotaMensual(): number {
+    const cuota = this.prestamoCocheData?.monthlyPayment;
+    return typeof cuota === 'number' && cuota > 0 ? cuota : 0;
+  }
+
   get maxAmount(): number {
     return this.loanType === 'individual' ? this.maxAmountIndividual : this.maxAmountCompartido;
   }

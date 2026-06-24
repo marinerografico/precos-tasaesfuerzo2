@@ -31,9 +31,12 @@
     (closeRequested)="onCloseRequestedPrestamoCoche()">
   </app-prestamo-coche-resumen>
 
-  <!-- Préstamo Coche: Confirmación normativa (40% ingresos) -->
+  <!-- Préstamo Coche: Confirmación normativa -->
   <app-prestamo-coche-normativa
     *ngIf="prestamoCocheView === 'normativa'"
+    [variant]="normativaVariant"
+    [ingresosMensuales]="normativaIngresosMensuales"
+    [cuotaMensual]="normativaCuotaMensual"
     (back)="onPrestamoCocheNormativaBack()"
     (accepted)="onPrestamoCocheNormativaAccepted()"
     (rejected)="onPrestamoCocheNormativaRejected()"
@@ -45,6 +48,9 @@
   <!-- Préstamo Coche: KO normativa — préstamo no disponible -->
   <app-prestamo-coche-normativa
     *ngIf="prestamoCocheView === 'normativa-unavailable'"
+    [variant]="normativaVariant"
+    [ingresosMensuales]="normativaIngresosMensuales"
+    [cuotaMensual]="normativaCuotaMensual"
     initialScreen="unavailable"
     (viewOtherLoans)="onNormativaViewOtherLoans()"
     (goToPosicionGlobal)="onNormativaGoToPosicionGlobal()"

@@ -12,10 +12,7 @@ import { ViewportScroller } from '@angular/common';
 import { markPreconcedidoNormativaRechazado } from '../../constants/prestamo-preconcedido-entry';
 import {
   NormativaVariant,
-  NormativaEjemploTooltip,
-  NORMATIVA_INGRESOS_DEFAULT,
   buildNormativaEjemploTooltip,
-  calcularDisponiblesNormativa,
   formatNormativaEuro
 } from '../../constants/normativa-disponibles';
 
@@ -31,7 +28,6 @@ type NormativaScreen = 'question' | 'unavailable' | 'redirect-spinner';
 })
 export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() variant: NormativaVariant = 'classic';
-  @Input() ingresosMensuales = NORMATIVA_INGRESOS_DEFAULT;
   @Input() cuotaMensual = 0;
   @Input() initialScreen: NormativaScreen = 'question';
   @Output() back = new EventEmitter<void>();
@@ -54,28 +50,12 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
     return this.variant === 'tangible';
   }
 
-  get ingresosEfectivos(): number {
-    return this.ingresosMensuales > 0 ? this.ingresosMensuales : NORMATIVA_INGRESOS_DEFAULT;
-  }
-
-  get disponiblesEuros(): number {
-    return calcularDisponiblesNormativa(this.ingresosEfectivos, this.cuotaMensual);
-  }
-
-  get ingresosLabel(): string {
-    return formatNormativaEuro(this.ingresosEfectivos);
-  }
-
   get cuotaMensualLabel(): string {
     return formatNormativaEuro(this.cuotaMensual);
   }
 
-  get disponiblesLabel(): string {
-    return formatNormativaEuro(this.disponiblesEuros);
-  }
-
-  get ejemploTooltip(): NormativaEjemploTooltip {
-    return buildNormativaEjemploTooltip(this.ingresosEfectivos, this.cuotaMensual);
+  get ejemploTooltip() {
+    return buildNormativaEjemploTooltip(this.cuotaMensual);
   }
 
   ngOnInit(): void {

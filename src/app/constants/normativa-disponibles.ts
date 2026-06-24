@@ -2,11 +2,11 @@ import { formatPreconcedidoImporte } from './prestamo-preconcedido-offer';
 
 export type NormativaVariant = 'classic' | 'tangible';
 
-/** Ingresos por defecto del perfil simulado (Laura, renta media) */
-export const NORMATIVA_INGRESOS_DEFAULT = 3500;
+/** Ingresos de referencia en el ejemplo (perfil dosmileurista) */
+export const NORMATIVA_INGRESOS_EJEMPLO = 2000;
 
-/** Cuota externa de ejemplo para la tooltip (menor que X en escenarios típicos) */
-export const NORMATIVA_EJEMPLO_CUOTAS_EXTERNAS = 300;
+/** Cuota externa de ejemplo en la tooltip */
+export const NORMATIVA_EJEMPLO_CUOTAS_EXTERNAS = 200;
 
 export function calcularDisponiblesNormativa(
   ingresosMensuales: number,
@@ -30,12 +30,12 @@ export interface NormativaEjemploTooltip {
   puedeResponderSi: boolean;
 }
 
+/** Ejemplo fijo dosmileurista; el usuario aplica la misma lógica con sus datos reales */
 export function buildNormativaEjemploTooltip(
-  ingresosMensuales: number,
   cuotaPrestamo: number,
   cuotasExternasEjemplo = NORMATIVA_EJEMPLO_CUOTAS_EXTERNAS
 ): NormativaEjemploTooltip {
-  const ingresos = ingresosMensuales > 0 ? ingresosMensuales : NORMATIVA_INGRESOS_DEFAULT;
+  const ingresos = NORMATIVA_INGRESOS_EJEMPLO;
   const cuota = Math.max(0, cuotaPrestamo);
   const disponibles = calcularDisponiblesNormativa(ingresos, cuota);
   const trasExternas = Math.max(0, ingresos - cuotasExternasEjemplo);

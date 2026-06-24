@@ -35,7 +35,6 @@
   <app-prestamo-coche-normativa
     *ngIf="prestamoCocheView === 'normativa'"
     [variant]="normativaVariant"
-    [ingresosMensuales]="normativaIngresosMensuales"
     [cuotaMensual]="normativaCuotaMensual"
     (back)="onPrestamoCocheNormativaBack()"
     (accepted)="onPrestamoCocheNormativaAccepted()"
@@ -49,7 +48,6 @@
   <app-prestamo-coche-normativa
     *ngIf="prestamoCocheView === 'normativa-unavailable'"
     [variant]="normativaVariant"
-    [ingresosMensuales]="normativaIngresosMensuales"
     [cuotaMensual]="normativaCuotaMensual"
     initialScreen="unavailable"
     (viewOtherLoans)="onNormativaViewOtherLoans()"

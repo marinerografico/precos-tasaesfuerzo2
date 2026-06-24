@@ -16,10 +16,7 @@ import { Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
 import { WizardState } from '../../services/wizard-state.service';
 import { environment } from '../../../environments/environment';
-import {
-  NormativaVariant,
-  NORMATIVA_INGRESOS_DEFAULT
-} from '../../constants/normativa-disponibles';
+import { NormativaVariant } from '../../constants/normativa-disponibles';
 
 declare var lucide: any;
 
@@ -74,11 +71,6 @@ export class PrestamosComponent implements AfterViewInit, OnInit, OnDestroy {
 
   get normativaVariant(): NormativaVariant {
     return environment.normativaVariant ?? 'classic';
-  }
-
-  get normativaIngresosMensuales(): number {
-    const ingresos = this.wizardState.getCurrentState().perfilFinanciero?.ingresos ?? 0;
-    return ingresos > 0 ? ingresos : NORMATIVA_INGRESOS_DEFAULT;
   }
 
   get normativaCuotaMensual(): number {

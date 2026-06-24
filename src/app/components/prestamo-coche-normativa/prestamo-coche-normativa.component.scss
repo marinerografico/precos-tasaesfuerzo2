@@ -84,45 +84,6 @@
   margin-bottom: 1.25rem;
 }
 
-.normativa-summary {
-  margin-bottom: 1.25rem;
-  padding: 1rem;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.75rem;
-}
-
-.normativa-summary-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 0.75rem;
-  font-size: 0.875rem;
-  line-height: 1.4;
-
-  & + & {
-    margin-top: 0.5rem;
-  }
-
-  &--highlight {
-    margin-top: 0.75rem;
-    padding-top: 0.75rem;
-    border-top: 1px solid #e2e8f0;
-    font-weight: 700;
-    color: #0f172a;
-  }
-}
-
-.normativa-summary-label {
-  color: #64748b;
-}
-
-.normativa-summary-value {
-  color: #0f172a;
-  font-variant-numeric: tabular-nums;
-  text-align: right;
-}
-
 .normativa-tooltip-trigger {
   flex-shrink: 0;
   display: inline-flex;

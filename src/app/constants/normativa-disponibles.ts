@@ -30,6 +30,27 @@ export interface NormativaEjemploTooltip {
   puedeResponderSi: boolean;
 }
 
+/** Texto narrativo del ejemplo para la tooltip */
+export function buildNormativaEjemploNarrativa(cuotaPrestamo: number): string {
+  const ejemplo = buildNormativaEjemploTooltip(cuotaPrestamo);
+
+  if (ejemplo.puedeResponderSi) {
+    return (
+      `Imagina que cobras ${ejemplo.ingresosLabel} € al mes y la cuota de este préstamo es de ${ejemplo.cuotaPrestamoLabel} €. ` +
+      `En ese caso te quedarían ${ejemplo.disponiblesLabel} € disponibles. ` +
+      `Si además pagas ${ejemplo.cuotasExternasEjemploLabel} € en otras entidades, después de esas cuotas te quedan ${ejemplo.trasExternasLabel} €, ` +
+      `por lo que podrías responder Sí. Haz el mismo cálculo con tus ingresos y cuotas reales antes de contestar.`
+    );
+  }
+
+  return (
+    `Imagina que cobras ${ejemplo.ingresosLabel} € al mes y la cuota de este préstamo es de ${ejemplo.cuotaPrestamoLabel} €. ` +
+    `Te quedarían ${ejemplo.disponiblesLabel} € disponibles. ` +
+    `Si pagas ${ejemplo.cuotasExternasEjemploLabel} € en otras entidades, después de esas cuotas te quedan ${ejemplo.trasExternasLabel} €, ` +
+    `por debajo de ese margen, así que deberías responder No. Adapta el ejemplo a tu situación real.`
+  );
+}
+
 /** Ejemplo fijo dosmileurista; el usuario aplica la misma lógica con sus datos reales */
 export function buildNormativaEjemploTooltip(
   cuotaPrestamo: number,

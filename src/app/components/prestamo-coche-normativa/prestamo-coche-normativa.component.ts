@@ -13,7 +13,7 @@ import { markPreconcedidoNormativaRechazado } from '../../constants/prestamo-pre
 import {
   NormativaVariant,
   NORMATIVA_INGRESOS_EJEMPLO,
-  buildNormativaEjemploTooltip,
+  buildNormativaEjemploNarrativa,
   calcularDisponiblesNormativa,
   formatNormativaEuro
 } from '../../constants/normativa-disponibles';
@@ -65,8 +65,8 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
     return formatNormativaEuro(this.umbralDisponiblesEuros);
   }
 
-  get ejemploTooltip() {
-    return buildNormativaEjemploTooltip(this.cuotaMensual);
+  get ejemploNarrativa(): string {
+    return buildNormativaEjemploNarrativa(this.cuotaMensual);
   }
 
   ngOnInit(): void {
@@ -146,6 +146,8 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
     if (answer === 'no') {
       this.secondAnswer = null;
       this.closeEjemploTooltip();
+    } else {
+      setTimeout(() => this.initIcons(), 0);
     }
   }
 

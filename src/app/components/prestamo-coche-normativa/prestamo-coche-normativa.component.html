@@ -84,7 +84,13 @@
               [attr.aria-expanded]="showEjemploTooltip"
               aria-controls="normativa-ejemplo-tooltip"
               aria-label="Ver ejemplo de cómo comprobarlo">
-              <i data-lucide="info" class="normativa-tooltip-trigger-icon" aria-hidden="true"></i>
+              <img
+                class="normativa-tooltip-trigger-icon"
+                src="assets/icons/prestamo-ayuda-icon.png"
+                width="22"
+                height="22"
+                alt=""
+                decoding="async" />
             </button>
           </div>
 
@@ -94,28 +100,7 @@
             class="normativa-tooltip-panel"
             role="tooltip"
             (click)="$event.stopPropagation()">
-            <p class="normativa-tooltip-title">Ejemplo sencillo</p>
-            <p class="normativa-tooltip-line">
-              Ingresos: <strong>{{ ejemploTooltip.ingresosLabel }} €</strong>
-            </p>
-            <p class="normativa-tooltip-line">
-              Cuota de este préstamo: <strong>{{ ejemploTooltip.cuotaPrestamoLabel }} €</strong>
-            </p>
-            <p class="normativa-tooltip-line">
-              Disponibles (X): <strong>{{ ejemploTooltip.disponiblesLabel }} €</strong>
-            </p>
-            <p class="normativa-tooltip-line">
-              Cuotas en otras entidades (ej.): <strong>{{ ejemploTooltip.cuotasExternasEjemploLabel }} €</strong>
-            </p>
-            <p class="normativa-tooltip-line">
-              Tras pagarlas: <strong>{{ ejemploTooltip.trasExternasLabel }} €</strong>
-            </p>
-            <p class="normativa-tooltip-result" *ngIf="ejemploTooltip.puedeResponderSi">
-              Como {{ ejemploTooltip.trasExternasLabel }} € es mayor que {{ ejemploTooltip.disponiblesLabel }} €, podrías responder <strong>Sí</strong>.
-            </p>
-            <p class="normativa-tooltip-hint">
-              Haz el mismo cálculo con tus ingresos y cuotas reales antes de responder.
-            </p>
+            <p class="normativa-tooltip-text">{{ ejemploNarrativa }}</p>
           </div>
         </div>
 

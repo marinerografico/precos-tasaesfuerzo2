@@ -12,7 +12,9 @@ import { ViewportScroller } from '@angular/common';
 import { markPreconcedidoNormativaRechazado } from '../../constants/prestamo-preconcedido-entry';
 import {
   NormativaVariant,
+  NORMATIVA_INGRESOS_EJEMPLO,
   buildNormativaEjemploTooltip,
+  calcularDisponiblesNormativa,
   formatNormativaEuro
 } from '../../constants/normativa-disponibles';
 
@@ -52,6 +54,15 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
 
   get cuotaMensualLabel(): string {
     return formatNormativaEuro(this.cuotaMensual);
+  }
+
+  /** X = ingresos de referencia (dosmileurista) − cuota de este préstamo */
+  get umbralDisponiblesEuros(): number {
+    return calcularDisponiblesNormativa(NORMATIVA_INGRESOS_EJEMPLO, this.cuotaMensual);
+  }
+
+  get umbralDisponiblesLabel(): string {
+    return formatNormativaEuro(this.umbralDisponiblesEuros);
   }
 
   get ejemploTooltip() {

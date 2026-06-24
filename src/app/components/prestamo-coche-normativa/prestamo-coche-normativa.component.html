@@ -32,6 +32,10 @@
     <main class="normativa-main" *ngIf="screen === 'question'">
       <h2 class="normativa-title">Información económica</h2>
 
+      <p class="normativa-intro" *ngIf="isTangibleVariant">
+        Por normativa, necesitamos confirmar que puedes asumir todas tus cuotas, incluida la de este préstamo.
+      </p>
+
       <section class="normativa-question-block" aria-labelledby="normativa-q1">
         <p id="normativa-q1" class="normativa-question">
           ¿Pagas cuotas de préstamos u otros productos financieros en otras entidades?
@@ -66,43 +70,16 @@
         *ngIf="showSecondQuestion"
         class="normativa-question-block normativa-question-block--reveal"
         aria-labelledby="normativa-q2">
-        <div class="normativa-question-with-help">
-          <div class="normativa-question-header">
-            <p id="normativa-q2" class="normativa-question normativa-question--with-tooltip">
-              <ng-container *ngIf="!isTangibleVariant">
-                Después de pagar esas cuotas, ¿te queda disponible más del 40% de tus ingresos totales al mes?
-              </ng-container>
-              <ng-container *ngIf="isTangibleVariant">
-                Después de pagar esas cuotas, ¿te queda disponible más de {{ umbralDisponiblesLabel }} € de tus ingresos totales al mes?
-              </ng-container>
-            </p>
-            <button
-              *ngIf="isTangibleVariant"
-              type="button"
-              class="normativa-tooltip-trigger"
-              (click)="toggleEjemploTooltip($event)"
-              [attr.aria-expanded]="showEjemploTooltip"
-              aria-controls="normativa-ejemplo-tooltip"
-              aria-label="Ver ejemplo de cómo comprobarlo">
-              <img
-                class="normativa-tooltip-trigger-icon"
-                src="assets/icons/prestamo-ayuda-icon.png"
-                width="22"
-                height="22"
-                alt=""
-                decoding="async" />
-            </button>
-          </div>
-
-          <div
-            *ngIf="isTangibleVariant && showEjemploTooltip"
-            id="normativa-ejemplo-tooltip"
-            class="normativa-tooltip-panel"
-            role="tooltip"
-            (click)="$event.stopPropagation()">
-            <p class="normativa-tooltip-text">{{ ejemploNarrativa }}</p>
-          </div>
-        </div>
+        <p id="normativa-q2" class="normativa-question">
+          <ng-container *ngIf="!isTangibleVariant">
+            Después de pagar esas cuotas, ¿te queda disponible más del 40% de tus ingresos totales al mes?
+          </ng-container>
+          <ng-container *ngIf="isTangibleVariant">
+            Después de pagar esas cuotas, ¿te queda disponible más de
+            <strong class="normativa-question-amount">{{ umbralDisponiblesLabel }} €</strong>
+            de tus ingresos totales al mes?
+          </ng-container>
+        </p>
 
         <div class="normativa-options" role="radiogroup" aria-labelledby="normativa-q2">
           <label class="normativa-option" [class.normativa-option--selected]="secondAnswer === 'yes'">
@@ -128,9 +105,19 @@
             <span class="normativa-option-label">No</span>
           </label>
         </div>
+
+        <aside
+          *ngIf="isTangibleVariant"
+          class="normativa-ejemplo-card"
+          aria-labelledby="normativa-ejemplo-title">
+          <h3 id="normativa-ejemplo-title" class="normativa-ejemplo-card__title">
+            ¿Qué significa esto con un ejemplo?
+          </h3>
+          <p class="normativa-ejemplo-card__text">{{ ejemploNarrativa }}</p>
+        </aside>
       </section>
 
-      <p class="normativa-info">
+      <p class="normativa-info" *ngIf="!isTangibleVariant">
         <i data-lucide="info" class="normativa-info-icon" aria-hidden="true"></i>
         <span>
           Por normativa, necesitamos confirmar que puedes asumir todas tus cuotas, incluido este préstamo, sin superar el 40% de tus ingresos netos.

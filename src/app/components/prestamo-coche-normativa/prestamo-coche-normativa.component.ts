@@ -1,7 +1,6 @@
 import {
   Component,
   EventEmitter,
-  HostListener,
   Input,
   Output,
   AfterViewInit,
@@ -42,7 +41,6 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
   screen: NormativaScreen = 'question';
   paysElsewhereAnswer: NormativaAnswer = null;
   secondAnswer: NormativaAnswer = null;
-  showEjemploTooltip = false;
 
   private otherProductRedirectTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -104,35 +102,6 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
     return this.secondAnswer !== null;
   }
 
-  toggleEjemploTooltip(event: Event): void {
-    event.stopPropagation();
-    this.showEjemploTooltip = !this.showEjemploTooltip;
-    if (this.showEjemploTooltip) {
-      setTimeout(() => this.initIcons(), 0);
-    }
-  }
-
-  closeEjemploTooltip(): void {
-    this.showEjemploTooltip = false;
-  }
-
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: Event): void {
-    const target = event.target as HTMLElement;
-    if (
-      target.closest('.normativa-tooltip-trigger') ||
-      target.closest('.normativa-tooltip-panel')
-    ) {
-      return;
-    }
-    this.showEjemploTooltip = false;
-  }
-
-  @HostListener('document:keydown.escape')
-  onEscape(): void {
-    this.showEjemploTooltip = false;
-  }
-
   onBack(): void {
     this.back.emit();
   }
@@ -145,7 +114,6 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
     this.paysElsewhereAnswer = answer;
     if (answer === 'no') {
       this.secondAnswer = null;
-      this.closeEjemploTooltip();
     } else {
       setTimeout(() => this.initIcons(), 0);
     }

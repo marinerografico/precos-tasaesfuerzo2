@@ -25,11 +25,19 @@
 }
 
 .normativa-title {
-  margin: 0 0 1.25rem;
+  margin: 0 0 1rem;
   font-size: 1.5rem;
   font-weight: 700;
   color: #000000;
   line-height: 1.25;
+}
+
+.normativa-intro {
+  margin: 0 0 1.5rem;
+  font-size: 1rem;
+  font-weight: 400;
+  color: #0f172a;
+  line-height: 1.5;
 }
 
 .normativa-question-block {
@@ -71,96 +79,41 @@
   font-weight: 700;
   color: #000000;
   line-height: 1.45;
-
-  &--with-tooltip {
-    margin-bottom: 0;
-    flex: 1;
-  }
 }
 
-.normativa-question-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
+.normativa-question-amount {
+  font-weight: 700;
+  color: #000000;
 }
 
-.normativa-question-with-help {
-  position: relative;
-  margin-bottom: 1.25rem;
-  z-index: 20;
+.normativa-ejemplo-card {
+  margin: 0.25rem 0 0;
+  padding: 1rem;
+  background: #f1f5f9;
+  border-radius: 0.5rem;
 }
 
-.normativa-tooltip-trigger {
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  margin-top: 0.125rem;
-  padding: 0;
-  border: none;
-  border-radius: 50%;
-  background: transparent;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-
-  &:hover,
-  &[aria-expanded='true'] {
-    background: #f1f5f9;
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--bs-color-primary, #006dff);
-    outline-offset: 2px;
-  }
+.normativa-ejemplo-card__title {
+  margin: 0 0 0.625rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.35;
 }
 
-.normativa-tooltip-trigger-icon {
-  display: block;
-  width: 1.375rem;
-  height: 1.375rem;
-  object-fit: contain;
-}
-
-.normativa-tooltip-panel {
-  position: absolute;
-  top: calc(100% + 0.5rem);
-  left: 0;
-  right: 0;
-  z-index: 210;
-  padding: 0.875rem 1rem;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.75rem;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
-  animation: normativaTooltipIn 0.2s ease;
-}
-
-.normativa-tooltip-text {
+.normativa-ejemplo-card__text {
   margin: 0;
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
   font-weight: 400;
   color: #475569;
   line-height: 1.5;
-}
-
-@keyframes normativaTooltipIn {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .normativa-options {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
 }
 
 .normativa-option {

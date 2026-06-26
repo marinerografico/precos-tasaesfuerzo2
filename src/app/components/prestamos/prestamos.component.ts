@@ -261,16 +261,6 @@ export class PrestamosComponent implements AfterViewInit, OnInit, OnDestroy {
     });
   }
 
-  onIrAPotencialFinanciero(): void {
-    // Navegación inteligente: si ya tiene scoring, ir al resultado (paso 6), sino al guide panel (paso 4)
-    const state = this.wizardState.getCurrentState();
-    if (state.hasUpdatedPotential) {
-      this.wizardState.setCurrentStep(6); // Resultado directo
-    } else {
-      this.wizardState.setCurrentStep(4); // Guide panel
-    }
-  }
-
   // Métodos para el componente Galatea mejorado
   onAmountChangeFromGalatea(newValue: number): void {
     this.amount = newValue;

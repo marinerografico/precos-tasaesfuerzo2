@@ -25,8 +25,8 @@
           ></app-posicion-global>
         </ng-container>
       </ng-container>
-      <app-contratar *ngSwitchCase="2" (next)="nextStep()" (previous)="previousStep()"></app-contratar>
-      <app-prestamos *ngSwitchCase="3" (next)="nextStep()" (previous)="previousStep()"></app-prestamos>
+      <app-contratar *ngSwitchCase="2" (previous)="previousStep()"></app-contratar>
+      <app-prestamos *ngSwitchCase="3" (previous)="previousStep()"></app-prestamos>
       
       <!-- Flujo MVP: MoneyConfidence -->
       <app-landing *ngSwitchCase="4" (next)="nextStep()" (previous)="previousStep()"></app-landing>

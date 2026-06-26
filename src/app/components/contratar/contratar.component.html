@@ -22,7 +22,7 @@
         <div
           class="prestamo-preconcedido-card"
           *ngIf="showPreconcedidoCard"
-          (click)="onIrAPrestamos()">
+          (click)="onIrAPrestamoPreconcedido()">
           <div class="prestamo-card-header">
             <div class="prestamo-badge">
               <i data-lucide="zap" class="w-4 h-4"></i>
@@ -57,7 +57,7 @@
             <button
               type="button"
               class="prestamo-cta-primary"
-              (click)="onIrAPrestamos(); $event.stopPropagation()"
+              (click)="onIrAPrestamoPreconcedido(); $event.stopPropagation()"
             >
               Simular cuota
             </button>

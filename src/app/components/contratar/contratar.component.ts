@@ -104,11 +104,7 @@ export class ContratarComponent implements AfterViewInit, OnInit {
 
   onIrASimulador(): void {
     this.onCerrarModal();
-    if (!isPreconcedidoEntryBlocked()) {
-      this.wizardState.openPreconcedidoDesdePosicionGlobal(PRECONCEDIDO_IMPORTE_MAX);
-    } else {
-      this.wizardState.setCurrentStep(3);
-    }
+    this.onIrAPrestamoPreconcedido();
   }
 
   onVerFAQ(): void {
@@ -118,11 +114,18 @@ export class ContratarComponent implements AfterViewInit, OnInit {
     alert('Preguntas frecuentes - En desarrollo');
   }
 
-  onIrAPrestamos(): void {
-    if (!isPreconcedidoEntryBlocked()) {
-      this.wizardState.openPreconcedidoDesdePosicionGlobal(PRECONCEDIDO_IMPORTE_MAX);
+  /** Card preconcedido / «Simular cuota»: onboarding + simulador (mismo patrón que Posición global). */
+  onIrAPrestamoPreconcedido(): void {
+    if (isPreconcedidoEntryBlocked()) {
+      this.wizardState.setCurrentStep(3);
+      return;
     }
-    this.next.emit();
+    this.wizardState.openPreconcedidoDesdePosicionGlobal(PRECONCEDIDO_IMPORTE_MAX);
+  }
+
+  /** Listado «Préstamos y créditos» en Contratar: solo abre el hub de préstamos. */
+  onIrAPrestamos(): void {
+    this.wizardState.setCurrentStep(3);
   }
 
   /** Tarjeta genérica cashback (sustituye al preconcedido si hubo rechazo normativo) */

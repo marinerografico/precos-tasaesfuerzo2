@@ -507,26 +507,6 @@
           </div>
         </div>
 
-        <!-- Acceso a MoneyConfidence (si no tiene scoring) -->
-        <div class="mb-6" *ngIf="!hasUpdatedPotential">
-          <div class="financial-health-access">
-            <div class="financial-health-access-icon">
-              <i data-lucide="sparkles" class="w-4 h-4"></i>
-            </div>
-            <div class="financial-health-access-content">
-              <p class="financial-health-access-text">
-                Calcula tu potencial financiero para ver tu salud financiera personalizada
-              </p>
-              <button type="button" 
-                      class="financial-health-access-btn"
-                      (click)="onIrAPotencialFinanciero()"
-                      aria-label="Calcular potencial financiero">
-                Calcular potencial financiero
-                <i data-lucide="arrow-right" class="w-4 h-4"></i>
-              </button>
-            </div>
-          </div>
-        </div>
       </section>
 
       <!-- Modal de préstamo reactivo -->

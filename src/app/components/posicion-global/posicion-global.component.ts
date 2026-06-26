@@ -262,7 +262,7 @@ export class PosicionGlobalComponent implements AfterViewInit, OnDestroy, OnInit
   }
 
   onIrAContratar(): void {
-    this.next.emit();
+    this.wizardState.setCurrentStep(2);
   }
 
   // Navegar a la posición de cuentas desde las filas de Cuenta Sabadell / Cuenta familiar

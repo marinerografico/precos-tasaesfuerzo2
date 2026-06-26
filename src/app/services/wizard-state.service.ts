@@ -362,7 +362,7 @@ export class WizardStateService {
 
   nextStep(): void {
     const currentState = this.getCurrentState();
-    // Contratar y Préstamos navegan por setCurrentStep; no deben saltar a MoneyConfidence (paso 4+).
+    // Contratar / Préstamos navegan por setCurrentStep; no deben saltar a MoneyConfidence (paso 4+).
     if (currentState.currentStep === 2 || currentState.currentStep === 3) {
       return;
     }

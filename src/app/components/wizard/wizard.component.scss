@@ -1,5 +1,6 @@
 .wizard-container {
-  min-height: 100vh;
+  min-height: 100dvh;
+  height: 100dvh;
   background-color: var(--bs-color-background, #f8f9fa);
   display: flex;
   flex-direction: column;
@@ -51,6 +52,14 @@
   max-width: 100%;
   margin: 0;
   overflow: hidden;
+
+  app-posicion-global,
+  app-contratar {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 @media (min-width: 768px) {

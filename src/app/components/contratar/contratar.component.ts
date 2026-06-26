@@ -1,7 +1,12 @@
 import { Component, EventEmitter, Output, AfterViewInit, OnInit, HostListener } from '@angular/core';
 import { WizardStateService } from '../../services/wizard-state.service';
 import { isPreconcedidoEntryBlocked } from '../../constants/prestamo-preconcedido-entry';
-import { PRECONCEDIDO_IMPORTE_MAX } from '../../constants/prestamo-preconcedido-offer';
+import {
+  formatPreconcedidoImporte,
+  formatPreconcedidoPlazoLabel,
+  formatPreconcedidoTaeLabel,
+  PRECONCEDIDO_IMPORTE_MAX
+} from '../../constants/prestamo-preconcedido-offer';
 
 declare var lucide: any;
 
@@ -21,6 +26,17 @@ export class ContratarComponent implements AfterViewInit, OnInit {
   hasSeenModal = false; // Para controlar si ya vio la modal la primera vez
 
   constructor(private wizardState: WizardStateService) {}
+
+  get preconcedidoImporteMax(): number {
+    return this.wizardState.getCurrentState().preconcedidoImporteMax ?? PRECONCEDIDO_IMPORTE_MAX;
+  }
+
+  get preconcedidoImporteMaxLabel(): string {
+    return formatPreconcedidoImporte(this.preconcedidoImporteMax);
+  }
+
+  readonly preconcedidoTaeLabel = formatPreconcedidoTaeLabel();
+  readonly preconcedidoPlazoLabel = formatPreconcedidoPlazoLabel();
 
   // Datos del préstamo (parametrizables)
   prestamoData = {

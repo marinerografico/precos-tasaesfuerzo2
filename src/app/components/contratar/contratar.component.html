@@ -35,20 +35,20 @@
 
           <div class="prestamo-card-content">
             <h3 class="prestamo-title">Tienes un préstamo disponible</h3>
-            <p class="prestamo-subtitle">Hasta 15.000 € aprobados para ti</p>
+            <p class="prestamo-subtitle">Hasta {{ preconcedidoImporteMaxLabel }} € aprobados para ti</p>
 
             <div class="prestamo-details">
               <div class="prestamo-detail-item">
                 <span class="prestamo-detail-label">Importe</span>
-                <span class="prestamo-detail-value">15.000 €</span>
+                <span class="prestamo-detail-value">{{ preconcedidoImporteMaxLabel }} €</span>
               </div>
               <div class="prestamo-detail-item">
                 <span class="prestamo-detail-label">Tipo interés</span>
-                <span class="prestamo-detail-value">5,95% TAE</span>
+                <span class="prestamo-detail-value">{{ preconcedidoTaeLabel }}</span>
               </div>
               <div class="prestamo-detail-item">
                 <span class="prestamo-detail-label">Plazo</span>
-                <span class="prestamo-detail-value">60 meses</span>
+                <span class="prestamo-detail-value">{{ preconcedidoPlazoLabel }}</span>
               </div>
             </div>
           </div>

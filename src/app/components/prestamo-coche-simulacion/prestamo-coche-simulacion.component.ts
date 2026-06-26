@@ -4,7 +4,10 @@ import { PRESTAMO_FAQS, SEGURO_FAQS } from '../../constants/prestamo-coche-faq';
 import {
   defaultPreconcedidoSimulacionImporte,
   PRECONCEDIDO_IMPORTE_MAX,
-  PRECONCEDIDO_IMPORTE_MIN
+  PRECONCEDIDO_IMPORTE_MIN,
+  PRECONCEDIDO_PLAZO_MESES_DEFAULT,
+  PRECONCEDIDO_TAE_ANUAL,
+  PRECONCEDIDO_TIN_ANUAL
 } from '../../constants/prestamo-preconcedido-offer';
 
 declare var lucide: any;
@@ -29,7 +32,7 @@ export class PrestamoCocheSimulacionComponent implements OnInit, OnChanges, Afte
   minAmount = PRECONCEDIDO_IMPORTE_MIN;
   maxAmount = PRECONCEDIDO_IMPORTE_MAX;
   amount = defaultPreconcedidoSimulacionImporte(this.maxAmount);
-  termMonths = 96;
+  termMonths = PRECONCEDIDO_PLAZO_MESES_DEFAULT;
   monthlyPayment = 250.00;
   hasInsurance = false;
   insuranceCost = 11.20;
@@ -41,8 +44,8 @@ export class PrestamoCocheSimulacionComponent implements OnInit, OnChanges, Afte
   amountError: string | null = null;
 
   // TIN y TAE
-  tin = 4.00;
-  tae = 4.84;
+  tin = PRECONCEDIDO_TIN_ANUAL;
+  tae = PRECONCEDIDO_TAE_ANUAL;
 
   // Drawer de información del seguro
   showInsuranceDrawer = false;

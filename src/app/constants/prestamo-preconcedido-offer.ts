@@ -2,6 +2,11 @@
 export const PRECONCEDIDO_IMPORTE_MIN = 3000;
 export const PRECONCEDIDO_IMPORTE_MAX = 45000;
 
+/** Condiciones ilustrativas del simulador preconcedido (card Contratar, simulación, resumen) */
+export const PRECONCEDIDO_TIN_ANUAL = 4;
+export const PRECONCEDIDO_TAE_ANUAL = 4.84;
+export const PRECONCEDIDO_PLAZO_MESES_DEFAULT = 96;
+
 export function formatPreconcedidoImporte(
   value: number,
   options?: { decimals?: number }
@@ -11,6 +16,17 @@ export function formatPreconcedidoImporte(
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals
   });
+}
+
+export function formatPreconcedidoTaeLabel(): string {
+  return `${PRECONCEDIDO_TAE_ANUAL.toFixed(2).replace('.', ',')}% TAE`;
+}
+
+export function formatPreconcedidoPlazoLabel(
+  months = PRECONCEDIDO_PLAZO_MESES_DEFAULT
+): string {
+  const years = months / 12;
+  return Number.isInteger(years) ? `${years} años` : `${months} meses`;
 }
 
 /** Importe inicial del simulador (~75 % del máximo, múltiplo de 500) */

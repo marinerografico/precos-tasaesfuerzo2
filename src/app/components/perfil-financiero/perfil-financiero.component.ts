@@ -27,7 +27,10 @@ export class PerfilFinancieroComponent implements OnInit, AfterViewInit {
     this.profileForm = this.fb.group({
       ingresos: [0, [Validators.required, Validators.min(0)]],
       gastos: [0, [Validators.required, Validators.min(0)]],
-      otrosBancos: [false]
+      otrosBancos: [false],
+      // Campos añadidos para la nueva pregunta (no se guardan en el estado global por ahora)
+      otrosPrestamos: [null],
+      debtRatio: ['']
     });
   }
 

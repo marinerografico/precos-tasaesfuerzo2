@@ -105,6 +105,45 @@
       </div>
     </section>
 
+    <!-- Pregunta: cuotas en otras entidades -->
+    <section class="form-section informacion-economica">
+      <h2 class="section-title">Información económica</h2>
+
+      <div class="question-block">
+        <p class="question">¿Pagas cuotas de préstamos u otros productos financieros en otras entidades?</p>
+        <label class="radio">
+          <input type="radio" name="otrosPrestamos" value="yes" />
+          <span>Sí</span>
+        </label>
+        <label class="radio">
+          <input type="radio" name="otrosPrestamos" value="no" />
+          <span>No</span>
+        </label>
+      </div>
+
+      <div class="detail-block">
+        <p class="detail">
+          <strong>Suma lo que pagas cada mes por todos tus préstamos, incluido este.</strong>
+          ¿El total es <strong>menos del 40%</strong> de lo que ingresas al mes?
+        </p>
+        <p class="example">Por ejemplo, si ingresas 2.000 €, el límite serían 800 €.</p>
+
+        <label class="radio">
+          <input type="radio" name="debtRatio" value="less" />
+          <span>Sí, es menos</span>
+        </label>
+        <label class="radio">
+          <input type="radio" name="debtRatio" value="more" />
+          <span>No, es más del 40%</span>
+        </label>
+
+        <p class="help">
+          <i class="icon-info"></i>
+          Por normativa, necesitamos confirmar que puedes asumir todas tus cuotas, incluido este préstamo, sin superar el 40% de tus ingresos netos.
+        </p>
+      </div>
+    </section>
+
     <!-- Actions -->
     <div class="form-actions">
       <button

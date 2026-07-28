@@ -48,7 +48,7 @@ src/
 │   ├── services/
 │   │   └── wizard-state.service.ts  # Servicio de estado
 │   ├── app.module.ts
-│   └── app.component.ts
+│   │   └── app.component.ts
 ├── styles.scss                   # Estilos globales
 └── index.html
 ```
@@ -98,3 +98,7 @@ Para integrar este módulo en la app principal de Angular:
 ## 📄 Licencia
 
 Propiedad de Banco Sabadell - Uso interno
+
+---
+
+Redeploy trigger: 2026-07-28T11:30:00Z

@@ -5,7 +5,9 @@ import {
   Output,
   AfterViewInit,
   OnDestroy,
-  OnInit
+  OnInit,
+  ElementRef,
+  Renderer2
 } from '@angular/core';
 import { ViewportScroller } from '@angular/common';
 import { markPreconcedidoNormativaRechazado } from '../../constants/prestamo-preconcedido-entry';
@@ -45,9 +47,16 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
   // Tooltip state for the example
   showExampleTooltip = false;
 
+  // handler remover for document click listener (to close tooltip when clicking outside)
+  private removeDocumentClickListener: (() => void) | null = null;
+
   private otherProductRedirectTimer: ReturnType<typeof setTimeout> | null = null;
 
-  constructor(private viewportScroller: ViewportScroller) {}
+  constructor(
+    private viewportScroller: ViewportScroller,
+    private host: ElementRef,
+    private renderer: Renderer2
+  ) {}
 
   get isTangibleVariant(): boolean {
     return this.variant === 'tangible';
@@ -88,6 +97,10 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
     if (this.otherProductRedirectTimer) {
       clearTimeout(this.otherProductRedirectTimer);
       this.otherProductRedirectTimer = null;
+    }
+    if (this.removeDocumentClickListener) {
+      this.removeDocumentClickListener();
+      this.removeDocumentClickListener = null;
     }
   }
 
@@ -142,7 +155,31 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
 
   toggleExampleTooltip(event?: Event): void {
     if (event) { event.stopPropagation(); }
+
     this.showExampleTooltip = !this.showExampleTooltip;
+
+    // attach/remove a document click listener to detect outside clicks
+    if (this.showExampleTooltip) {
+      // add listener
+      if (!this.removeDocumentClickListener) {
+        this.removeDocumentClickListener = this.renderer.listen('document', 'click', (evt: Event) => {
+          const target = evt.target as Node;
+          if (!this.host.nativeElement.contains(target)) {
+            this.showExampleTooltip = false;
+            if (this.removeDocumentClickListener) {
+              this.removeDocumentClickListener();
+              this.removeDocumentClickListener = null;
+            }
+          }
+        });
+      }
+    } else {
+      // remove listener if present
+      if (this.removeDocumentClickListener) {
+        this.removeDocumentClickListener();
+        this.removeDocumentClickListener = null;
+      }
+    }
   }
 
   private showUnavailableScreen(): void {

@@ -71,15 +71,10 @@
         class="normativa-question-block normativa-question-block--reveal"
         aria-labelledby="normativa-q2">
         <p id="normativa-q2" class="normativa-question">
-          <ng-container *ngIf="!isTangibleVariant">
-            Después de pagar esas cuotas, ¿te queda disponible más del 40% de tus ingresos totales al mes?
-          </ng-container>
-          <ng-container *ngIf="isTangibleVariant">
-            Después de pagar esas cuotas, ¿te queda disponible más de
-            <strong class="normativa-question-amount">{{ umbralDisponiblesLabel }} €</strong>
-            de tus ingresos totales al mes?
-          </ng-container>
+          Suma lo que pagas cada mes por todos tus préstamos, incluido este. ¿El total es menos del 40% de lo que ingresas al mes?
         </p>
+
+        <p class="normativa-example">Por ejemplo, si ingresas 2.000 €, el límite serían 800 €.</p>
 
         <div class="normativa-options" role="radiogroup" aria-labelledby="normativa-q2">
           <label class="normativa-option" [class.normativa-option--selected]="secondAnswer === 'yes'">
@@ -91,7 +86,7 @@
               [checked]="secondAnswer === 'yes'"
               (change)="selectSecondAnswer('yes')" />
             <span class="normativa-option-control" aria-hidden="true"></span>
-            <span class="normativa-option-label">Sí</span>
+            <span class="normativa-option-label">Sí, es menos</span>
           </label>
           <label class="normativa-option" [class.normativa-option--selected]="secondAnswer === 'no'">
             <input
@@ -102,7 +97,7 @@
               [checked]="secondAnswer === 'no'"
               (change)="selectSecondAnswer('no')" />
             <span class="normativa-option-control" aria-hidden="true"></span>
-            <span class="normativa-option-label">No</span>
+            <span class="normativa-option-label">No, es más del 40%</span>
           </label>
         </div>
 
@@ -151,7 +146,7 @@
         Según la información indicada, <strong>las cuotas de tus financiaciones superarían el 40% de tus ingresos netos.</strong>
       </p>
       <p class="loan-unavailable-lead" *ngIf="isTangibleVariant">
-        Según lo indicado, después de pagar tus cuotas en otras entidades <strong>no te quedaría disponible más de {{ umbralDisponiblesLabel }} €</strong> de tus ingresos totales al mes para afrontar también la cuota de este préstamo (<strong>{{ cuotaMensualLabel }} €</strong>).
+        Según lo indicado, después de pagar tus cuotas en otras entidades <strong>no te quedaría disponible más de {{ umbralDisponiblesLabel }} €</strong> de tus ingresos totales al mes par[...]
       </p>
       <p class="loan-unavailable-muted" *ngIf="isTangibleVariant">
         Según lo que nos has indicado, no cumples ese margen para afrontar esta nueva deuda.

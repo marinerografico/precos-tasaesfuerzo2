@@ -75,7 +75,7 @@
           <button
             type="button"
             class="normativa-help-btn"
-            aria-expanded="{{ showExampleTooltip ? 'true' : 'false' }}"
+            [attr.aria-expanded]="showExampleTooltip ? 'true' : 'false'"
             aria-controls="normativa-ejemplo-tooltip"
             (click)="toggleExampleTooltip($event)"
             title="Ver ejemplo"

@@ -71,10 +71,23 @@
         class="normativa-question-block normativa-question-block--reveal"
         aria-labelledby="normativa-q2">
         <p id="normativa-q2" class="normativa-question">
-          Suma lo que pagas cada mes por todos tus préstamos, incluido este. ¿El total es menos del 40% de lo que ingresas al mes?
+          Sumando lo que pagas cada mes por todos tus préstamos, incluido este. ¿El total es menor al 40% de tus ingresos netos totales del mes?
+          <button
+            type="button"
+            class="normativa-help-btn"
+            aria-expanded="{{ showExampleTooltip ? 'true' : 'false' }}"
+            aria-controls="normativa-ejemplo-tooltip"
+            (click)="toggleExampleTooltip($event)"
+            title="Ver ejemplo"
+          >
+            <i data-lucide="info" aria-hidden="true"></i>
+            <span class="sr-only">Mostrar ejemplo</span>
+          </button>
         </p>
 
-        <p class="normativa-example">Por ejemplo, si ingresas 2.000 €, el límite serían 800 €.</p>
+        <div id="normativa-ejemplo-tooltip" class="normativa-ejemplo-tooltip" role="dialog" [attr.aria-hidden]="!showExampleTooltip">
+          <p class="normativa-ejemplo-tooltip__text">Por ejemplo, si ingresas 2.000 €, el 40% serían 800 €.</p>
+        </div>
 
         <div class="normativa-options" role="radiogroup" aria-labelledby="normativa-q2">
           <label class="normativa-option" [class.normativa-option--selected]="secondAnswer === 'yes'">
@@ -86,7 +99,7 @@
               [checked]="secondAnswer === 'yes'"
               (change)="selectSecondAnswer('yes')" />
             <span class="normativa-option-control" aria-hidden="true"></span>
-            <span class="normativa-option-label">Sí, es menos</span>
+            <span class="normativa-option-label">Sí</span>
           </label>
           <label class="normativa-option" [class.normativa-option--selected]="secondAnswer === 'no'">
             <input
@@ -97,19 +110,9 @@
               [checked]="secondAnswer === 'no'"
               (change)="selectSecondAnswer('no')" />
             <span class="normativa-option-control" aria-hidden="true"></span>
-            <span class="normativa-option-label">No, es más del 40%</span>
+            <span class="normativa-option-label">No</span>
           </label>
         </div>
-
-        <aside
-          *ngIf="isTangibleVariant"
-          class="normativa-ejemplo-card"
-          aria-labelledby="normativa-ejemplo-title">
-          <h3 id="normativa-ejemplo-title" class="normativa-ejemplo-card__title">
-            ¿Qué significa esto con un ejemplo?
-          </h3>
-          <p class="normativa-ejemplo-card__text">{{ ejemploNarrativa }}</p>
-        </aside>
       </section>
 
       <p class="normativa-info" *ngIf="!isTangibleVariant">

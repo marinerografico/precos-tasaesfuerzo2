@@ -42,6 +42,9 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
   paysElsewhereAnswer: NormativaAnswer = null;
   secondAnswer: NormativaAnswer = null;
 
+  // Tooltip state for the example
+  showExampleTooltip = false;
+
   private otherProductRedirectTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor(private viewportScroller: ViewportScroller) {}
@@ -135,6 +138,11 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
     if (this.secondAnswer === 'no') {
       this.showUnavailableScreen();
     }
+  }
+
+  toggleExampleTooltip(event?: Event): void {
+    if (event) { event.stopPropagation(); }
+    this.showExampleTooltip = !this.showExampleTooltip;
   }
 
   private showUnavailableScreen(): void {

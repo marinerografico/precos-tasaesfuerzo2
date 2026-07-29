@@ -2,7 +2,7 @@
 
 .prestamo-coche-normativa-container {
   width: 100%;
-  min-height: 100vh;
+  height: 100vh; /* ensure full viewport height so inner flex works */
   background: #ffffff;
   display: flex;
   flex-direction: column;
@@ -11,7 +11,7 @@
 .prestamo-coche-normativa-wrapper {
   position: relative;
   width: 100%;
-  min-height: 100vh;
+  height: 100%; /* fill container */
   display: flex;
   flex-direction: column;
 }
@@ -20,7 +20,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 1.5rem 1.25rem 7.5rem;
+  padding: 1.5rem 1.25rem 10rem; /* larger bottom padding so footer doesn't cover legal text */
   overflow-y: auto;
 }
 
@@ -84,6 +84,73 @@
 .normativa-question-amount {
   font-weight: 700;
   color: #000000;
+}
+
+/* Tooltip styles */
+.normativa-help-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.5rem;
+  padding: 0.25rem;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  color: var(--bs-color-primary, #006dff);
+}
+
+.normativa-ejemplo-tooltip {
+  position: absolute;
+  right: 1rem;
+  top: 3.6rem; /* adjust to sit under the question line */
+  width: 220px;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 0.75rem;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  z-index: 30;
+  transform-origin: top right;
+  transition: opacity .15s ease, transform .15s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.normativa-ejemplo-tooltip[aria-hidden="false"] {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.normativa-ejemplo-tooltip::before {
+  content: "";
+  position: absolute;
+  right: 18px;
+  top: -8px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid #ffffff;
+}
+
+.normativa-ejemplo-tooltip__text {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: #0f172a;
+  line-height: 1.4;
+}
+
+/* responsive: on small screens the tooltip becomes a block below the question */
+@media (max-width: 420px) {
+  .normativa-ejemplo-tooltip {
+    position: static;
+    width: auto;
+    margin: 0.5rem 0;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.14);
+  }
+  .normativa-ejemplo-tooltip::before { display: none; }
 }
 
 .normativa-ejemplo-card {
@@ -241,169 +308,4 @@
     cursor: not-allowed;
   }
 
-}
-
-/* Pantalla préstamo no disponible */
-.loan-unavailable-screen {
-  position: fixed;
-  inset: 0;
-  z-index: 2600;
-  background: #ffffff;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: flex-start;
-  overflow-y: auto;
-  padding: env(safe-area-inset-top, 0) 1.35rem calc(1.5rem + env(safe-area-inset-bottom, 0));
-  animation: fadeIn 0.25s ease;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.loan-unavailable-inner {
-  max-width: 28rem;
-  margin: 0 auto;
-  padding-top: 2rem;
-  width: 100%;
-}
-
-.loan-unavailable-icon-wrap {
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 50%;
-  background: #dc2626;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 1.5rem;
-}
-
-.loan-unavailable-icon-x {
-  width: 1.75rem;
-  height: 1.75rem;
-  color: #ffffff;
-  stroke-width: 2.5;
-}
-
-.loan-unavailable-title {
-  margin: 0 0 1rem;
-  font-size: 1.375rem;
-  font-weight: 700;
-  color: #000000;
-  line-height: 1.25;
-}
-
-.loan-unavailable-lead {
-  margin: 0 0 1rem;
-  font-size: 1rem;
-  color: #1e293b;
-  line-height: 1.5;
-}
-
-.loan-unavailable-muted {
-  margin: 0 0 2rem;
-  font-size: 0.9375rem;
-  color: #64748b;
-  line-height: 1.5;
-}
-
-.loan-unavailable-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.loan-unavailable-btn {
-  width: 100%;
-  padding: 0.95rem 1rem;
-  border-radius: 9999px;
-  font-size: 1rem;
-  font-weight: 700;
-  cursor: pointer;
-  font-family: inherit;
-  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-
-  &--primary {
-    border: none;
-    background: var(--bs-color-primary, #006dff);
-    color: #ffffff;
-
-    &:hover {
-      background: var(--bs-color-primary-dark, #0058e6);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--bs-color-primary, #006dff);
-      outline-offset: 2px;
-    }
-  }
-
-  &--outline {
-    border: 2px solid var(--bs-color-primary, #006dff);
-    background: #ffffff;
-    color: var(--bs-color-primary, #006dff);
-
-    &:hover {
-      background: #f0f7ff;
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--bs-color-primary, #006dff);
-      outline-offset: 2px;
-    }
-  }
-}
-
-.other-product-redirect-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 2700;
-  background: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1.5rem 1.35rem calc(1.5rem + env(safe-area-inset-bottom, 0));
-}
-
-.other-product-redirect-content {
-  max-width: 22rem;
-  text-align: center;
-}
-
-.other-product-redirect-spinner {
-  width: 3rem;
-  height: 3rem;
-  margin: 0 auto 1.5rem;
-  border: 3px solid #e2e8f0;
-  border-top-color: var(--bs-color-primary, #006dff);
-  border-radius: 50%;
-  animation: otherProductRedirectSpin 0.75s linear infinite;
-}
-
-@keyframes otherProductRedirectSpin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.other-product-redirect-title {
-  margin: 0 0 0.75rem;
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #0f172a;
-  line-height: 1.25;
-}
-
-.other-product-redirect-text {
-  margin: 0;
-  font-size: 1rem;
-  color: #475569;
-  line-height: 1.5;
 }

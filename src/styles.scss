@@ -161,9 +161,10 @@ body {
 }
 
 .loan-unavailable-btn--primary {
-  background: linear-gradient(180deg, var(--bs-color-primary, #1ca0ff) 0%, var(--bs-color-primary-dark, #007bff) 100%);
+  /* updated to match requested color #006DFF */
+  background: #006DFF;
   color: #ffffff;
-  box-shadow: 0 6px 22px rgba(28,160,255,0.18);
+  box-shadow: 0 6px 22px rgba(0,109,255,0.18);
 }
 
 .loan-unavailable-btn--outline {

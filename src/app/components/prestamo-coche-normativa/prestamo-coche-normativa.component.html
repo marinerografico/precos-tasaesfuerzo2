@@ -141,18 +141,8 @@
         <i data-lucide="x" class="loan-unavailable-icon-x"></i>
       </div>
       <h1 id="loan-unavailable-title" class="loan-unavailable-title">Este préstamo no está disponible</h1>
-      <p class="loan-unavailable-lead" *ngIf="!isTangibleVariant">
-        Según la información indicada, <strong>las cuotas de tus financiaciones superarían el 40% de tus ingresos netos.</strong>
-      </p>
-      <p class="loan-unavailable-lead" *ngIf="isTangibleVariant">
-        Según lo indicado, después de pagar tus cuotas en otras entidades <strong>no te quedaría disponible más de {{ umbralDisponiblesLabel }} €</strong> de tus ingresos totales al mes par[...]
-      </p>
-      <p class="loan-unavailable-muted" *ngIf="isTangibleVariant">
-        Según lo que nos has indicado, no cumples ese margen para afrontar esta nueva deuda.
-      </p>
-      <p class="loan-unavailable-muted">
-        Si necesitas ayuda o quieres revisar otras opciones, puedes acudir a tu oficina o consultar otro préstamo disponible.
-      </p>
+      <p class="loan-unavailable-lead">Según la información indicada, las cuotas de tus financiaciones superarían el 40% de tus ingresos netos.</p>
+      <p class="loan-unavailable-muted">Si necesitas ayuda o quieres revisar otras opciones, puedes acudir a tu oficina o consultar otros préstamos disponibles.</p>
       <div class="loan-unavailable-actions">
         <button type="button" class="loan-unavailable-btn loan-unavailable-btn--primary" (click)="onViewOtherLoansFromUnavailable()">
           Ir a Préstamo Sabadell

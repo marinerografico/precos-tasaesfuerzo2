@@ -320,11 +320,12 @@
 .other-product-redirect-overlay {
   position: fixed;
   inset: 0;
-  z-index: 99998;
+  z-index: 100200 !important; /* ensure overlay sits above everything */
   display: flex;
   align-items: center;
   justify-content: center;
   background: rgba(255,255,255,0.95);
+  pointer-events: auto;
 }
 
 .other-product-redirect-content {
@@ -334,18 +335,23 @@
 }
 
 .other-product-redirect-spinner {
-  width: 3.5rem;
-  height: 3.5rem;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
-  border: 4px solid rgba(0,0,0,0.08);
-  border-top-color: #006DFF; /* brand blue */
-  animation: oc-rotate 0.9s linear infinite;
+  border: 6px solid rgba(0,0,0,0.08);
+  border-top-color: #006DFF !important; /* brand blue visible arc */
+  border-right-color: rgba(0,0,0,0.08);
+  border-bottom-color: rgba(0,0,0,0.08);
+  border-left-color: rgba(0,0,0,0.08);
+  -webkit-animation: oc-rotate 0.9s linear infinite !important;
+  animation: oc-rotate 0.9s linear infinite !important;
   margin: 0 auto 1.25rem;
+  display: block;
+  will-change: transform;
 }
 
-@keyframes oc-rotate {
-  to { transform: rotate(360deg); }
-}
+@-webkit-keyframes oc-rotate { to { -webkit-transform: rotate(360deg); transform: rotate(360deg); } }
+@keyframes oc-rotate { to { transform: rotate(360deg); } }
 
 .other-product-redirect-title {
   margin: 0 0 0.5rem;

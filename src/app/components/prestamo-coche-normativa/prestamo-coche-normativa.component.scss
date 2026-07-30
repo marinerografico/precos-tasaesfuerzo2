@@ -101,7 +101,9 @@
   color: var(--bs-color-primary, #006dff);
 }
 
+/* Hide from layout when closed, show when open. This prevents mobile whitespace */
 .normativa-ejemplo-tooltip {
+  display: none; /* don't occupy space when hidden */
   position: absolute;
   right: 1rem;
   top: 3.6rem; /* adjust to sit under the question line */
@@ -118,6 +120,7 @@
 }
 
 .normativa-ejemplo-tooltip[aria-hidden="false"] {
+  display: block; /* now occupies layout when visible */
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
@@ -151,6 +154,9 @@
     box-shadow: 0 6px 18px rgba(0,0,0,0.14);
   }
   .normativa-ejemplo-tooltip::before { display: none; }
+  /* ensure hidden state still doesn't occupy space */
+  .normativa-ejemplo-tooltip[aria-hidden="true"] { display: none; }
+  .normativa-ejemplo-tooltip[aria-hidden="false"] { display: block; }
 }
 
 .normativa-ejemplo-card {

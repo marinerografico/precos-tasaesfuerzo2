@@ -315,3 +315,47 @@
   }
 
 }
+
+/* -------------------- Spinner / redirect overlay styles -------------------- */
+.other-product-redirect-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.95);
+}
+
+.other-product-redirect-content {
+  text-align: center;
+  max-width: 28rem;
+  padding: 2rem 1.25rem 6rem; /* leave space for bottom safe area */
+}
+
+.other-product-redirect-spinner {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  border: 4px solid rgba(0,0,0,0.08);
+  border-top-color: #006DFF; /* brand blue */
+  animation: oc-rotate 0.9s linear infinite;
+  margin: 0 auto 1.25rem;
+}
+
+@keyframes oc-rotate {
+  to { transform: rotate(360deg); }
+}
+
+.other-product-redirect-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.other-product-redirect-text {
+  margin: 0;
+  color: #475569;
+  line-height: 1.45;
+}

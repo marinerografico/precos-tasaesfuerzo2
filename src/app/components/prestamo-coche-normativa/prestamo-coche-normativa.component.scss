@@ -1,5 +1,11 @@
 @import '../prestamo-coche-wizard-header';
 
+/* Fix: ensure flex parents allow internal scrolling by setting min-height:0 */
+.prestamo-coche-normativa-container,
+.prestamo-coche-normativa-wrapper {
+  min-height: 0;
+}
+
 .prestamo-coche-normativa-container {
   width: 100%;
   height: 100vh; /* ensure full viewport height so inner flex works */
@@ -22,6 +28,8 @@
   flex-direction: column;
   padding: 1.5rem 1.25rem 10rem; /* larger bottom padding so footer doesn't cover legal text */
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* momentum scrolling on mobile */
+  overscroll-behavior-y: contain; /* prevent browser pull-to-refresh but allow scroll */
 }
 
 .normativa-title {

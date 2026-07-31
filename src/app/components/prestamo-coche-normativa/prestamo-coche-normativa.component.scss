@@ -1,35 +1,26 @@
 @import '../prestamo-coche-wizard-header';
 
-/* Fix: ensure flex parents allow internal scrolling by setting min-height:0 */
-.prestamo-coche-normativa-container,
-.prestamo-coche-normativa-wrapper {
-  min-height: 0;
-}
-
+/* Layout change: allow the page to scroll naturally instead of using a full-viewport flex scroller.
+   This removes fixed/100vh heights so the document body handles scrolling and avoids nested scrollers
+   that block native pull-to-refresh and cause scroll issues on some mobile browsers. */
 .prestamo-coche-normativa-container {
   width: 100%;
-  height: 100vh; /* ensure full viewport height so inner flex works */
   background: #ffffff;
-  display: flex;
-  flex-direction: column;
+  display: block; /* let the document flow handle height */
 }
 
 .prestamo-coche-normativa-wrapper {
   position: relative;
   width: 100%;
-  height: 100%; /* fill container */
-  display: flex;
-  flex-direction: column;
+  display: block; /* avoid forcing inner flex/height behavior */
 }
 
+/* Main content uses normal flow; remove internal full-height scroller so the page scrolls */
 .normativa-main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 1.5rem 1.25rem 10rem; /* larger bottom padding so footer doesn't cover legal text */
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch; /* momentum scrolling on mobile */
-  overscroll-behavior-y: contain; /* prevent browser pull-to-refresh but allow scroll */
+  display: block;
+  padding: 1.5rem 1.25rem 10rem; /* keep bottom padding so fixed footer doesn't cover content */
+  overflow: visible; /* allow document scrolling */
+  -webkit-overflow-scrolling: touch; /* momentum scrolling where applicable */
 }
 
 .normativa-title {

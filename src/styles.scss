@@ -20,6 +20,18 @@ body {
   color: var(--bs-color-text-primary, #1a1a1a);
 }
 
+/* Quick mobile scroll fix: ensure the document can pan vertically and allow native scrolling. */
+html, body, app-root {
+  height: auto !important;
+  overflow: auto !important;
+  touch-action: pan-y !important; /* allow vertical panning gestures */
+}
+
+/* Make sure key interactive elements don't block vertical gestures */
+.normativa-footer, .normativa-cta, .other-product-redirect-overlay {
+  touch-action: pan-y;
+}
+
 /* Mobile-first responsive utilities */
 .container {
   max-width: 100%;

@@ -1,15 +1,70 @@
 /* CTA spacing variables */
 :root {
-  --app-cta-height: 4.5rem; /* default CTA height */
-  --app-cta-gap: 1rem;     /* gap between content and CTA */
+  --app-cta-height: 4.5rem;
+  --app-cta-gap: 1rem;
 }
 
-/* Ensure .normativa-main leaves enough bottom padding so content isn't covered by the fixed CTA */
-.normativa-main {
-  padding-bottom: calc(var(--app-cta-height) + var(--app-cta-gap) + env(safe-area-inset-bottom, 0));
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-/* Slightly smaller CTA on very small screens */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: var(
+    --bs-font-family-base,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Arial,
+    sans-serif
+  );
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--bs-color-background, #f8f9fa);
+  color: var(--bs-color-text-primary, #1a1a1a);
+}
+
+app-root {
+  display: block;
+  height: 100%;
+  min-height: 100%;
+}
+
+/* Espacio bajo el CTA fijo en pantallas de flujo con footer anclado */
+.normativa-main,
+.resumen-main {
+  padding-bottom: calc(
+    var(--app-cta-height) + var(--app-cta-gap) + env(safe-area-inset-bottom, 0px)
+  );
+}
+
+/* Contener overscroll en scrollers de la app (sin romper el scroll nativo) */
+.normativa-main,
+.resumen-main,
+.wizard-content,
+.prestamos-container {
+  overscroll-behavior-y: contain;
+}
+
+.normativa-footer,
+.normativa-cta,
+.resumen-footer,
+.resumen-cta {
+  touch-action: pan-y;
+}
+
+/* CTA algo más compacto en pantallas muy pequeñas */
 @media (max-width: 420px) {
-  :root { --app-cta-height: 4rem; }
+  :root {
+    --app-cta-height: 4rem;
+  }
 }

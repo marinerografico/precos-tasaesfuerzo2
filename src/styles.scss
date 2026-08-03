@@ -213,3 +213,55 @@ app-root {
     width: 100%;
   }
 }
+
+/*
+  Redirect spinner — estilos GLOBALES.
+  El overlay se monta en document.body (fuera del encapsulado del componente).
+*/
+.other-product-redirect-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.95);
+  pointer-events: auto;
+}
+
+.other-product-redirect-content {
+  text-align: center;
+  max-width: 28rem;
+  padding: 2rem 1.25rem calc(2rem + env(safe-area-inset-bottom, 0px));
+}
+
+.other-product-redirect-spinner {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 6px solid rgba(0, 0, 0, 0.08);
+  border-top-color: #006dff;
+  margin: 0 auto 1.25rem;
+  display: block;
+  animation: oc-rotate 0.9s linear infinite;
+  will-change: transform;
+}
+
+@keyframes oc-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.other-product-redirect-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.other-product-redirect-text {
+  margin: 0;
+  color: #475569;
+  line-height: 1.45;
+}

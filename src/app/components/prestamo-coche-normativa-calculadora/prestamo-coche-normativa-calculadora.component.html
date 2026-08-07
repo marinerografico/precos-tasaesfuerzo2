@@ -1,0 +1,147 @@
+<div class="normativa-calc-container">
+  <header class="normativa-calc-header">
+    <button type="button" class="normativa-calc-close" (click)="onClose()" aria-label="Cerrar">
+      <img
+        class="normativa-calc-close-icon"
+        src="assets/icons/prestamo-cerrar-icon.png"
+        width="26"
+        height="26"
+        alt=""
+        decoding="async" />
+    </button>
+  </header>
+
+  <main class="normativa-calc-main">
+    <h2 class="normativa-calc-title">Calcula el % entre ingresos y cuotas</h2>
+    <p class="normativa-calc-subtitle">
+      Esta es una herramienta orientativa para facilitarte el cálculo. No guardaremos los datos.
+    </p>
+
+    <div class="normativa-calc-field">
+      <label class="normativa-calc-label" for="calc-ingresos">Ingresos netos mensuales</label>
+      <div class="normativa-calc-input-wrap">
+        <input
+          id="calc-ingresos"
+          class="normativa-calc-input"
+          type="text"
+          inputmode="decimal"
+          autocomplete="off"
+          [ngModel]="ingresosRaw"
+          (ngModelChange)="onIngresosChange($event)" />
+        <button
+          *ngIf="ingresosRaw.trim()"
+          type="button"
+          class="normativa-calc-clear"
+          (click)="clearIngresos()"
+          aria-label="Borrar">
+          ✕
+        </button>
+      </div>
+    </div>
+
+    <div class="normativa-calc-field">
+      <span class="normativa-calc-label" id="calc-cuotas-label">Cuotas en otra entidad</span>
+      <div class="normativa-calc-cuotas" role="group" aria-labelledby="calc-cuotas-label">
+        <div class="normativa-calc-input-wrap" *ngFor="let cuota of cuotasExternas; let i = index; trackBy: trackByIndex">
+          <input
+            class="normativa-calc-input"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            [attr.id]="'calc-cuota-' + i"
+            [ngModel]="cuota"
+            (ngModelChange)="onCuotaExternaChange(i, $event)" />
+          <button
+            *ngIf="cuota.trim() || i > 0"
+            type="button"
+            class="normativa-calc-clear"
+            (click)="clearCuotaExterna(i)"
+            [attr.aria-label]="i === 0 ? 'Borrar' : 'Eliminar línea'">
+            ✕
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <button type="button" class="normativa-calc-add" (click)="addCuotaExterna()">
+      ⊕ Añadir otra cantidad
+    </button>
+
+    <div class="normativa-calc-field">
+      <span class="normativa-calc-label">Cuota a solicitar</span>
+      <div class="normativa-calc-input-wrap normativa-calc-input-wrap--readonly" aria-readonly="true">
+        <span class="normativa-calc-readonly">{{ cuotaSolicitarLabel }}</span>
+      </div>
+      <p class="normativa-calc-hint">En base a tu simulación en curso</p>
+    </div>
+
+    <aside
+      *ngIf="resumen as r"
+      class="normativa-calc-summary"
+      [class.normativa-calc-summary--apto]="r.apto"
+      [class.normativa-calc-summary--ko]="!r.apto"
+      aria-live="polite">
+      <div class="normativa-calc-summary-head">
+        <span class="normativa-calc-status" aria-hidden="true">{{ r.apto ? '✓' : '✕' }}</span>
+        <p class="normativa-calc-summary-title">
+          {{ r.apto
+            ? 'Tienes margen suficiente para solicitar este préstamo.'
+            : 'No tienes margen suficiente con esta cuota.' }}
+        </p>
+      </div>
+
+      <div class="normativa-calc-grid">
+        <div>
+          <span class="normativa-calc-metric-label">Ingresos netos</span>
+          <span class="normativa-calc-metric-value">{{ formatEuro(r.ingresos) }}</span>
+        </div>
+        <div>
+          <span class="normativa-calc-metric-label">Límite normativo (40%)</span>
+          <span class="normativa-calc-metric-value">{{ formatEuro(r.limite) }}</span>
+        </div>
+        <div>
+          <span class="normativa-calc-metric-label">Otras cuotas</span>
+          <span class="normativa-calc-metric-value">{{ formatEuro(r.otrasCuotas) }}</span>
+        </div>
+        <div>
+          <span class="normativa-calc-metric-label">Cuota a solicitar</span>
+          <span class="normativa-calc-metric-value">{{ formatEuro(r.cuotaSolicitar) }}</span>
+        </div>
+      </div>
+
+      <div class="normativa-calc-total">
+        <span>Total cuotas</span>
+        <strong>{{ formatEuro(r.totalCuotas) }}</strong>
+      </div>
+
+      <div class="normativa-calc-bar-wrap" aria-hidden="true">
+        <div class="normativa-calc-bar" [style.width.%]="r.ratioBar"></div>
+      </div>
+
+      <p class="normativa-calc-message" *ngIf="r.apto">
+        Usas el <strong>{{ r.pctIngresos }}% de tus ingresos</strong> en cuotas (límite 40%). Puedes continuar con la solicitud.
+      </p>
+      <p class="normativa-calc-message" *ngIf="!r.apto">
+        Usas el <strong>{{ r.pctIngresos }}% de tus ingresos</strong> en cuotas (límite 40%). Te pasas
+        {{ formatEuro(r.exceso) }}. Puedes volver a simular o continuar y recibir un KO.
+      </p>
+    </aside>
+  </main>
+
+  <footer class="normativa-calc-footer">
+    <button
+      type="button"
+      class="normativa-calc-cta"
+      [disabled]="!canContinue"
+      (click)="onContinue()">
+      {{ continueLabel }}
+    </button>
+    <button
+      *ngIf="showAdjustSimulation"
+      type="button"
+      class="normativa-calc-cta-secondary"
+      (click)="onAdjustSimulation()">
+      Volver a simulación
+    </button>
+  </footer>
+</div>

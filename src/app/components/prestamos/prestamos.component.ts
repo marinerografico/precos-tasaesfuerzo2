@@ -43,6 +43,9 @@ export class PrestamosComponent implements AfterViewInit, OnInit, OnDestroy {
   // Datos del préstamo para pasar al resumen
   prestamoCocheData: any = null;
 
+  /** Tras "Volver a simulación" desde la calculadora, al Continuar se vuelve a la calculadora */
+  private returnToNormativaCalculadora = false;
+
   // Estado de simulación
   loanType: 'individual' | 'compartido' = 'compartido';
   amount = defaultPreconcedidoSimulacionImporte(PRECONCEDIDO_IMPORTE_MAX);
@@ -822,6 +825,7 @@ export class PrestamosComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   onPrestamoCocheClose(): void {
+    this.returnToNormativaCalculadora = false;
     this.setPrestamoFlowView('none');
     if (typeof lucide !== 'undefined') {
       setTimeout(() => {
@@ -847,6 +851,12 @@ export class PrestamosComponent implements AfterViewInit, OnInit, OnDestroy {
     // Guardar datos del préstamo si se proporcionan
     if (data) {
       this.prestamoCocheData = data;
+    }
+    if (this.returnToNormativaCalculadora) {
+      this.returnToNormativaCalculadora = false;
+      this.setPrestamoFlowView('normativa-calculadora');
+      this.initializeIcons();
+      return;
     }
     // Navegar al resumen
     this.setPrestamoFlowView('resumen');
@@ -897,6 +907,22 @@ export class PrestamosComponent implements AfterViewInit, OnInit, OnDestroy {
         lucide.createIcons();
       }, 100);
     }
+  }
+
+  onPrestamoCocheNormativaOpenCalculator(): void {
+    this.setPrestamoFlowView('normativa-calculadora');
+    this.initializeIcons();
+  }
+
+  onPrestamoCocheCalculadoraClose(): void {
+    this.setPrestamoFlowView('normativa');
+    this.initializeIcons();
+  }
+
+  onPrestamoCocheCalculadoraAdjustSimulation(): void {
+    this.returnToNormativaCalculadora = true;
+    this.setPrestamoFlowView('simulation', { showOnboarding: false });
+    this.initializeIcons();
   }
 
   onPrestamoCocheNormativaRejected(): void {

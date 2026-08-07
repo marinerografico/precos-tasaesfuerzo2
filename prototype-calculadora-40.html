@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Prototipo · Calculadora 40%</title>
+  <style>
+    :root {
+      --blue: #006dff;
+      --blue-soft: rgba(0, 109, 255, 0.08);
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #dbe2ea;
+      --surface: #f1f4f7;
+      --ok: #16a34a;
+      --ko: #dc2626;
+      --ko-soft: #fef2f2;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: #d9e2ec;
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .stage {
+      max-width: 390px;
+      margin: 1rem auto;
+      background: #fff;
+      min-height: calc(100vh - 2rem);
+      box-shadow: 0 14px 40px rgba(15, 23, 42, 0.14);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      border-radius: 24px;
+      overflow: hidden;
+    }
+
+    .badge-proto {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: #0f172a;
+      color: #fff;
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 0.4rem 0.85rem;
+      text-align: center;
+    }
+
+    .screen { display: none; flex: 1; flex-direction: column; min-height: 0; }
+    .screen.is-active { display: flex; }
+
+    .header {
+      display: grid;
+      grid-template-columns: 2.5rem 1fr auto;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.7rem 0.85rem;
+      border-bottom: 1px solid #eef2f6;
+      flex-shrink: 0;
+    }
+    .header--calc {
+      display: flex;
+      justify-content: flex-end;
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 700;
+      text-align: center;
+    }
+    .header-actions { display: flex; gap: 0.1rem; }
+    .icon-btn {
+      width: 2.4rem;
+      height: 2.4rem;
+      border: none;
+      background: transparent;
+      color: var(--blue);
+      font-size: 1.35rem;
+      line-height: 1;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.25rem 1.25rem 8.5rem;
+      -webkit-overflow-scrolling: touch;
+    }
+    .main--calc { padding-top: 0.25rem; }
+
+    .title {
+      margin: 0 0 1rem;
+      font-size: 1.45rem;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+    .title--calc {
+      margin-bottom: 0.55rem;
+      font-size: 1.55rem;
+    }
+    .subtitle {
+      margin: 0 0 1.5rem;
+      font-size: 0.92rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .intro {
+      margin: 0 0 1.35rem;
+      font-size: 0.95rem;
+      color: var(--text);
+      line-height: 1.5;
+      font-weight: 400;
+    }
+
+    .question {
+      margin: 0 0 1rem;
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .options { display: flex; flex-direction: column; gap: 0.65rem; margin-bottom: 1.15rem; }
+    .option {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.85rem 1rem;
+      border: 1.5px solid var(--border);
+      border-radius: 9999px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.95rem;
+      background: #fff;
+    }
+    .option input { display: none; }
+    .option .dot {
+      width: 1.15rem;
+      height: 1.15rem;
+      border-radius: 50%;
+      border: 2px solid #94a3b8;
+      flex-shrink: 0;
+      position: relative;
+    }
+    .option.is-selected {
+      border-color: var(--blue);
+      background: var(--blue-soft);
+    }
+    .option.is-selected .dot { border-color: var(--blue); }
+    .option.is-selected .dot::after {
+      content: "";
+      position: absolute;
+      inset: 3px;
+      border-radius: 50%;
+      background: var(--blue);
+    }
+
+    /* Entry point — mockup pantalla 2 */
+    .entry {
+      margin: 0.35rem 0 0.25rem;
+      padding: 1.05rem 1.1rem 1.1rem;
+      border-radius: 14px;
+      background: var(--surface);
+      border: none;
+    }
+    .entry-title {
+      margin: 0 0 0.4rem;
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .entry-text {
+      margin: 0 0 0.75rem;
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .entry-btn {
+      border: none;
+      background: transparent;
+      color: var(--blue);
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 0;
+      cursor: pointer;
+    }
+    .entry-btn:hover { text-decoration: underline; }
+
+    .field { margin-bottom: 1.15rem; }
+    .field label {
+      display: block;
+      font-size: 0.98rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .field .hint {
+      margin: 0.45rem 0 0;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .input-wrap {
+      display: flex;
+      align-items: center;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      padding-right: 0.35rem;
+      min-height: 3.1rem;
+    }
+    .input-wrap:focus-within {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(0, 109, 255, 0.12);
+    }
+    .input-wrap.is-readonly { background: #f8fafc; }
+    .input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 0.85rem 0.85rem;
+      font-size: 1rem;
+      font-family: inherit;
+      color: var(--text);
+      min-width: 0;
+    }
+    .input:focus { outline: none; }
+    .input-readonly-value {
+      flex: 1;
+      padding: 0.85rem 0.85rem;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    .clear-btn {
+      width: 2rem;
+      height: 2rem;
+      border: none;
+      background: transparent;
+      color: #94a3b8;
+      font-size: 1.05rem;
+      cursor: pointer;
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
+
+    .add-line {
+      width: 100%;
+      margin: 0 0 1.35rem;
+      padding: 0.8rem 1rem;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      color: var(--blue);
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 0.45rem;
+      text-align: left;
+    }
+    .add-line:hover { text-decoration: underline; }
+
+    .cuota-extra { margin-top: 0.65rem; }
+
+    .summary {
+      margin-top: 0.5rem;
+      border-radius: 16px;
+      padding: 1.15rem 1.1rem 1.2rem;
+      background: var(--surface);
+      border: 1px solid #e8edf2;
+      display: none;
+    }
+    .summary.is-visible { display: block; }
+    .summary.is-apto { background: var(--surface); }
+    .summary.is-ko {
+      background: var(--ko-soft);
+      border-color: #fecaca;
+    }
+
+    .summary-head {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.7rem;
+      margin-bottom: 1.05rem;
+    }
+    .status-icon {
+      width: 1.55rem;
+      height: 1.55rem;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 0.05rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #fff;
+      background: var(--ok);
+    }
+    .is-ko .status-icon { background: var(--ko); }
+    .summary-head-text {
+      margin: 0;
+      font-size: 0.98rem;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.95rem 1rem;
+      margin-bottom: 0.95rem;
+    }
+    .metric-label {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-bottom: 0.2rem;
+    }
+    .metric-value {
+      display: block;
+      font-size: 0.98rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .total-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1rem;
+      padding-top: 0.85rem;
+      border-top: 1px solid #dde3ea;
+      margin-bottom: 0.95rem;
+      font-size: 0.98rem;
+      font-weight: 700;
+    }
+    .total-line strong { font-variant-numeric: tabular-nums; }
+
+    .bar-wrap {
+      height: 0.55rem;
+      background: #e5e9ee;
+      border-radius: 9999px;
+      overflow: hidden;
+      margin-bottom: 0.7rem;
+    }
+    .bar {
+      height: 100%;
+      width: 0%;
+      border-radius: 9999px;
+      background: #1e293b;
+      transition: width 0.25s ease, background 0.25s ease;
+      max-width: 100%;
+    }
+    .is-ko .bar { background: var(--ko); }
+
+    .summary-message {
+      margin: 0;
+      font-size: 0.86rem;
+      line-height: 1.45;
+      color: #475569;
+    }
+    .summary-message strong { color: var(--text); }
+
+    .footer {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 1rem 1.25rem calc(1rem + var(--safe-bottom));
+      background: linear-gradient(to top, #fff 72%, rgba(255,255,255,0));
+    }
+    .cta {
+      width: 100%;
+      border: none;
+      border-radius: 9999px;
+      padding: 0.95rem 1rem;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      background: var(--blue);
+      color: #fff;
+    }
+    .cta:disabled {
+      background: #93c5fd;
+      cursor: not-allowed;
+    }
+    .cta-secondary {
+      width: 100%;
+      margin-top: 0.65rem;
+      border: 2px solid rgba(0, 109, 255, 0.28);
+      border-radius: 9999px;
+      padding: 0.85rem 1rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      background: #fff;
+      color: var(--blue);
+    }
+
+    .toast {
+      position: absolute;
+      left: 1rem;
+      right: 1rem;
+      bottom: 5.5rem;
+      background: #0f172a;
+      color: #fff;
+      padding: 0.85rem 1rem;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      display: none;
+      z-index: 40;
+    }
+    .toast.is-visible { display: block; }
+
+    .ko-screen { padding: 2.5rem 1.35rem 8rem; }
+    .ko-icon {
+      width: 3.25rem;
+      height: 3.25rem;
+      border-radius: 50%;
+      background: #c8102e;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+    }
+    .sim-card {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.1rem 1.15rem;
+      background: #f8fafc;
+      margin-top: 1rem;
+    }
+    .sim-card h3 { margin: 0 0 0.5rem; font-size: 1.05rem; }
+    .sim-card p { margin: 0; color: var(--muted); font-size: 0.9rem; line-height: 1.45; }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="badge-proto">PROTOTIPO · flujo 4 pantallas del mockup</div>
+
+    <!-- 1 + 2: normativa -->
+    <section class="screen is-active" id="screen-normativa" aria-label="Información económica">
+      <header class="header">
+        <button class="icon-btn" type="button" aria-label="Volver">‹</button>
+        <h1>Préstamo Preconcedido</h1>
+        <div class="header-actions">
+          <button class="icon-btn" type="button" aria-label="Ayuda">💬</button>
+          <button class="icon-btn" type="button" aria-label="Cerrar">✕</button>
+        </div>
+      </header>
+      <main class="main">
+        <h2 class="title">Información económica</h2>
+        <p class="intro">
+          Por normativa, necesitamos confirmar que puedes asumir todas tus cuotas, incluido este préstamo, sin superar el 40% de tus ingresos netos.
+        </p>
+
+        <p class="question">¿Pagas cuotas de préstamos u otros productos financieros en otras entidades?</p>
+        <div class="options" id="q1-options"></div>
+
+        <div id="q2-block" hidden>
+          <p class="question">
+            Sumando lo que pagas cada mes por todos tus préstamos, incluido este. ¿El total es menor al 40% de tus ingresos netos totales del mes?
+          </p>
+          <div class="options" id="q2-options">
+            <label class="option" data-value="yes">
+              <input type="radio" name="q2" value="yes" />
+              <span class="dot"></span>
+              <span>Sí</span>
+            </label>
+            <label class="option" data-value="no">
+              <input type="radio" name="q2" value="no" />
+              <span class="dot"></span>
+              <span>No</span>
+            </label>
+          </div>
+
+          <div class="entry">
+            <p class="entry-title">¿Necesitas ayuda con el cálculo?</p>
+            <p class="entry-text">Puedes ver si llegas al 40% fácilmente. No guardaremos la información aportada.</p>
+            <button type="button" class="entry-btn" id="open-calc">Calcular</button>
+          </div>
+        </div>
+      </main>
+      <footer class="footer">
+        <button type="button" class="cta" id="normativa-continue" disabled>Continuar</button>
+      </footer>
+    </section>
+
+    <!-- 3 + 4: calculadora -->
+    <section class="screen" id="screen-calc" aria-label="Calculadora 40%">
+      <header class="header header--calc">
+        <button class="icon-btn" type="button" id="close-calc" aria-label="Cerrar">✕</button>
+      </header>
+      <main class="main main--calc">
+        <h2 class="title title--calc">Calcula el % entre ingresos y cuotas</h2>
+        <p class="subtitle">Esta es una herramienta orientativa para facilitarte el cálculo. No guardaremos los datos.</p>
+
+        <div class="field">
+          <label for="ingresos">Ingresos netos mensuales</label>
+          <div class="input-wrap">
+            <input class="input" id="ingresos" inputmode="decimal" placeholder="" />
+            <button type="button" class="clear-btn" data-clear="ingresos" aria-label="Borrar" hidden>✕</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="cuota-0">Cuotas en otra entidad</label>
+          <div id="cuotas-list">
+            <div class="input-wrap">
+              <input class="input cuota-input" id="cuota-0" inputmode="decimal" placeholder="" />
+              <button type="button" class="clear-btn" data-clear-input="cuota-0" aria-label="Borrar" hidden>✕</button>
+            </div>
+          </div>
+        </div>
+
+        <button type="button" class="add-line" id="add-cuota">⊕ Añadir otra cantidad</button>
+
+        <div class="field">
+          <label>Cuota a solicitar</label>
+          <div class="input-wrap is-readonly" aria-readonly="true">
+            <span class="input-readonly-value" id="cuota-solicitar-label">550,00 €</span>
+          </div>
+          <p class="hint">En base a tu simulación en curso</p>
+        </div>
+
+        <aside class="summary" id="summary" aria-live="polite">
+          <div class="summary-head">
+            <span class="status-icon" id="status-icon">✓</span>
+            <p class="summary-head-text" id="summary-title">Tienes margen suficiente para solicitar este préstamo.</p>
+          </div>
+          <div class="grid-2">
+            <div>
+              <span class="metric-label">Ingresos netos</span>
+              <span class="metric-value" id="row-ingresos">—</span>
+            </div>
+            <div>
+              <span class="metric-label">Límite normativo (40%)</span>
+              <span class="metric-value" id="row-limite">—</span>
+            </div>
+            <div>
+              <span class="metric-label">Otras cuotas</span>
+              <span class="metric-value" id="row-otras">—</span>
+            </div>
+            <div>
+              <span class="metric-label">Cuota a solicitar</span>
+              <span class="metric-value" id="row-solicitar">550 €</span>
+            </div>
+          </div>
+          <div class="total-line">
+            <span>Total cuotas</span>
+            <strong id="row-total">—</strong>
+          </div>
+          <div class="bar-wrap" aria-hidden="true"><div class="bar" id="bar"></div></div>
+          <p class="summary-message" id="summary-message"></p>
+        </aside>
+      </main>
+      <footer class="footer">
+        <button type="button" class="cta" id="calc-continue" disabled>Continuar</button>
+        <button type="button" class="cta-secondary" id="calc-adjust" hidden>Volver a simulación</button>
+      </footer>
+    </section>
+
+    <section class="screen" id="screen-docs" aria-label="Documentación">
+      <header class="header">
+        <button class="icon-btn" type="button" id="docs-back" aria-label="Volver">‹</button>
+        <h1>Préstamo Preconcedido</h1>
+        <button class="icon-btn" type="button" aria-label="Cerrar">✕</button>
+      </header>
+      <main class="main">
+        <h2 class="title">Documentación del préstamo</h2>
+        <p class="subtitle">Mock del siguiente paso tras Continuar siendo apto.</p>
+        <div class="sim-card">
+          <h3>Confirmación normativa superada</h3>
+          <p>Entraste aquí desde la calculadora sin volver a la pregunta Sí/No.</p>
+        </div>
+      </main>
+      <footer class="footer">
+        <button type="button" class="cta" id="restart">Volver al inicio del prototipo</button>
+      </footer>
+    </section>
+
+    <section class="screen" id="screen-sim" aria-label="Simulación">
+      <header class="header">
+        <button class="icon-btn" type="button" id="sim-back" aria-label="Volver">‹</button>
+        <h1>Préstamo Preconcedido</h1>
+        <button class="icon-btn" type="button" aria-label="Cerrar">✕</button>
+      </header>
+      <main class="main">
+        <h2 class="title">Ajusta tu simulación</h2>
+        <p class="subtitle">Mock: baja la cuota y vuelve a la calculadora.</p>
+        <div class="sim-card">
+          <h3>Cuota actual: <span id="sim-cuota">550,00 €</span></h3>
+          <div style="display:flex; gap:0.5rem; margin-top:1rem; flex-wrap:wrap;">
+            <button type="button" class="cta-secondary" style="width:auto; padding:0.65rem 1rem;" data-cuota="450">450 €</button>
+            <button type="button" class="cta-secondary" style="width:auto; padding:0.65rem 1rem;" data-cuota="350">350 €</button>
+            <button type="button" class="cta-secondary" style="width:auto; padding:0.65rem 1rem;" data-cuota="250">250 €</button>
+          </div>
+        </div>
+      </main>
+      <footer class="footer">
+        <button type="button" class="cta" id="sim-back-calc">Volver a la calculadora</button>
+      </footer>
+    </section>
+
+    <section class="screen" id="screen-ko" aria-label="Préstamo no disponible">
+      <div class="ko-screen">
+        <div class="ko-icon">✕</div>
+        <h2 class="title" style="font-size:1.35rem;">Este préstamo no está disponible</h2>
+        <p class="subtitle">Según el cálculo, las cuotas superarían el 40% de tus ingresos netos.</p>
+        <p class="subtitle" style="margin-top:-0.75rem;">
+          Si necesitas ayuda o quieres revisar otras opciones, puedes consultar otro préstamo disponible.
+        </p>
+      </div>
+      <footer class="footer">
+        <button type="button" class="cta" id="ko-sabadell">Ir a Préstamo Sabadell</button>
+        <button type="button" class="cta-secondary" id="ko-home">Ir a Posición Global</button>
+      </footer>
+    </section>
+
+    <div class="toast" id="toast" role="status"></div>
+  </div>
+
+  <script>
+    const CUOTA_SOLICITAR = { value: 550 };
+    const screens = {
+      normativa: document.getElementById('screen-normativa'),
+      calc: document.getElementById('screen-calc'),
+      docs: document.getElementById('screen-docs'),
+      sim: document.getElementById('screen-sim'),
+      ko: document.getElementById('screen-ko'),
+    };
+
+    function show(name) {
+      Object.values(screens).forEach((el) => el.classList.remove('is-active'));
+      screens[name].classList.add('is-active');
+      window.scrollTo(0, 0);
+    }
+
+    function toast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('is-visible');
+      clearTimeout(toast._t);
+      toast._t = setTimeout(() => el.classList.remove('is-visible'), 2400);
+    }
+
+    function parseEuro(raw) {
+      if (!raw || !String(raw).trim()) return null;
+      const n = Number(String(raw).replace(/\./g, '').replace(',', '.').replace(/[^\d.]/g, ''));
+      return Number.isFinite(n) ? n : null;
+    }
+
+    function formatEuro(n, decimals = 0) {
+      return n.toLocaleString('es-ES', {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals
+      }) + ' €';
+    }
+
+    function bindRadios(containerId) {
+      const root = document.getElementById(containerId);
+      root.querySelectorAll('.option').forEach((opt) => {
+        opt.addEventListener('click', () => {
+          root.querySelectorAll('.option').forEach((o) => o.classList.remove('is-selected'));
+          opt.classList.add('is-selected');
+          updateNormativaCta();
+        });
+      });
+    }
+
+    document.getElementById('q1-options').innerHTML = `
+      <label class="option is-selected" data-value="yes">
+        <input type="radio" name="q1" value="yes" checked />
+        <span class="dot"></span>
+        <span>Sí</span>
+      </label>
+      <label class="option" data-value="no">
+        <input type="radio" name="q1" value="no" />
+        <span class="dot"></span>
+        <span>No</span>
+      </label>
+    `;
+    bindRadios('q1-options');
+    bindRadios('q2-options');
+
+    function updateNormativaCta() {
+      const q1 = document.querySelector('#q1-options .option.is-selected')?.dataset.value;
+      const q2 = document.querySelector('#q2-options .option.is-selected')?.dataset.value;
+      const q2Block = document.getElementById('q2-block');
+      q2Block.hidden = q1 !== 'yes';
+      const btn = document.getElementById('normativa-continue');
+      if (q1 === 'no') btn.disabled = false;
+      else btn.disabled = !q2;
+    }
+    updateNormativaCta();
+
+    document.getElementById('normativa-continue').addEventListener('click', () => {
+      const q1 = document.querySelector('#q1-options .option.is-selected')?.dataset.value;
+      const q2 = document.querySelector('#q2-options .option.is-selected')?.dataset.value;
+      if (q1 === 'no' || q2 === 'yes') show('docs');
+      else if (q2 === 'no') show('ko');
+    });
+
+    document.getElementById('open-calc').addEventListener('click', () => {
+      show('calc');
+      recalculate();
+    });
+    document.getElementById('close-calc').addEventListener('click', () => show('normativa'));
+    document.getElementById('calc-adjust').addEventListener('click', () => show('sim'));
+    document.getElementById('sim-back').addEventListener('click', () => show('calc'));
+    document.getElementById('sim-back-calc').addEventListener('click', () => {
+      refreshCuotaLabels();
+      recalculate();
+      show('calc');
+    });
+    document.getElementById('docs-back').addEventListener('click', () => show('calc'));
+    document.getElementById('restart').addEventListener('click', () => show('normativa'));
+    document.getElementById('ko-sabadell').addEventListener('click', () => {
+      toast('Mock: redirección a Préstamo Sabadell (otros productos)');
+      // En la app real: spinner → flujo Préstamo Sabadell
+    });
+    document.getElementById('ko-home').addEventListener('click', () => {
+      toast('Mock: Posición Global');
+      show('normativa');
+    });
+
+    document.querySelectorAll('[data-cuota]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        CUOTA_SOLICITAR.value = Number(btn.dataset.cuota);
+        refreshCuotaLabels();
+        toast('Cuota actualizada a ' + formatEuro(CUOTA_SOLICITAR.value, 2));
+      });
+    });
+
+    function refreshCuotaLabels() {
+      document.getElementById('cuota-solicitar-label').textContent = formatEuro(CUOTA_SOLICITAR.value, 2);
+      document.getElementById('row-solicitar').textContent = formatEuro(CUOTA_SOLICITAR.value);
+      document.getElementById('sim-cuota').textContent = formatEuro(CUOTA_SOLICITAR.value, 2);
+    }
+
+    function syncClearVisibility(input, btn) {
+      if (!btn) return;
+      btn.hidden = !String(input.value).trim();
+    }
+
+    let cuotaCount = 1;
+    document.getElementById('add-cuota').addEventListener('click', () => {
+      const list = document.getElementById('cuotas-list');
+      const wrap = document.createElement('div');
+      wrap.className = 'cuota-extra';
+      const id = 'cuota-' + cuotaCount++;
+      wrap.innerHTML = `
+        <div class="input-wrap">
+          <input class="input cuota-input" id="${id}" inputmode="decimal" />
+          <button type="button" class="clear-btn" aria-label="Eliminar línea">✕</button>
+        </div>
+      `;
+      const input = wrap.querySelector('input');
+      const clearBtn = wrap.querySelector('.clear-btn');
+      clearBtn.addEventListener('click', () => {
+        wrap.remove();
+        recalculate();
+      });
+      input.addEventListener('input', () => {
+        syncClearVisibility(input, clearBtn);
+        recalculate();
+      });
+      list.appendChild(wrap);
+      input.focus();
+    });
+
+    const ingresosInput = document.getElementById('ingresos');
+    const ingresosClear = document.querySelector('[data-clear="ingresos"]');
+    ingresosInput.addEventListener('input', () => {
+      syncClearVisibility(ingresosInput, ingresosClear);
+      recalculate();
+    });
+    ingresosClear.addEventListener('click', () => {
+      ingresosInput.value = '';
+      syncClearVisibility(ingresosInput, ingresosClear);
+      ingresosInput.focus();
+      recalculate();
+    });
+
+    const cuota0 = document.getElementById('cuota-0');
+    const cuota0Clear = document.querySelector('[data-clear-input="cuota-0"]');
+    cuota0.addEventListener('input', () => {
+      syncClearVisibility(cuota0, cuota0Clear);
+      recalculate();
+    });
+    cuota0Clear.addEventListener('click', () => {
+      cuota0.value = '';
+      syncClearVisibility(cuota0, cuota0Clear);
+      cuota0.focus();
+      recalculate();
+    });
+
+    function getOtrasCuotas() {
+      return Array.from(document.querySelectorAll('.cuota-input'))
+        .map((el) => parseEuro(el.value))
+        .filter((n) => n !== null)
+        .reduce((a, b) => a + b, 0);
+    }
+
+    function hasAnyCuotaInput() {
+      return Array.from(document.querySelectorAll('.cuota-input')).some((el) => String(el.value).trim() !== '');
+    }
+
+    function recalculate() {
+      const ingresos = parseEuro(document.getElementById('ingresos').value);
+      const otras = getOtrasCuotas();
+      const solicitar = CUOTA_SOLICITAR.value;
+      const total = otras + solicitar;
+      const summary = document.getElementById('summary');
+      const continueBtn = document.getElementById('calc-continue');
+      const adjustBtn = document.getElementById('calc-adjust');
+      const statusIcon = document.getElementById('status-icon');
+
+      summary.classList.remove('is-visible', 'is-apto', 'is-ko');
+
+      // Empty state (pantalla 3): sin resumen hasta tener datos
+      if (ingresos === null || !hasAnyCuotaInput()) {
+        continueBtn.disabled = true;
+        continueBtn.textContent = 'Continuar';
+        adjustBtn.hidden = true;
+        return;
+      }
+
+      const limite = ingresos * 0.4;
+      const pctIngresos = Math.round((total / ingresos) * 100);
+      const ratioBar = limite > 0 ? Math.min(100, (total / limite) * 100) : 100;
+      const apto = total < limite;
+
+      summary.classList.add('is-visible');
+      document.getElementById('row-ingresos').textContent = formatEuro(ingresos);
+      document.getElementById('row-limite').textContent = formatEuro(limite);
+      document.getElementById('row-otras').textContent = formatEuro(otras);
+      document.getElementById('row-solicitar').textContent = formatEuro(solicitar);
+      document.getElementById('row-total').textContent = formatEuro(total);
+      document.getElementById('bar').style.width = ratioBar + '%';
+
+      if (apto) {
+        summary.classList.add('is-apto');
+        statusIcon.textContent = '✓';
+        document.getElementById('summary-title').textContent =
+          'Tienes margen suficiente para solicitar este préstamo.';
+        document.getElementById('summary-message').innerHTML =
+          'Usas el <strong>' + pctIngresos + '% de tus ingresos</strong> en cuotas (límite 40%). Puedes continuar con la solicitud.';
+        continueBtn.disabled = false;
+        continueBtn.textContent = 'Continuar';
+        adjustBtn.hidden = true;
+      } else {
+        summary.classList.add('is-ko');
+        statusIcon.textContent = '✕';
+        const exceso = total - limite;
+        document.getElementById('summary-title').textContent =
+          'No tienes margen suficiente con esta cuota.';
+        document.getElementById('summary-message').innerHTML =
+          'Usas el <strong>' + pctIngresos + '% de tus ingresos</strong> en cuotas (límite 40%). Te pasas ' +
+          formatEuro(exceso) + '. Puedes volver a simular o continuar y recibir un KO.';
+        continueBtn.disabled = false;
+        continueBtn.textContent = 'Continuar con esta cantidad';
+        adjustBtn.hidden = false;
+      }
+    }
+
+    document.getElementById('calc-continue').addEventListener('click', () => {
+      const ingresos = parseEuro(document.getElementById('ingresos').value);
+      if (ingresos === null || !hasAnyCuotaInput()) return;
+      const limite = ingresos * 0.4;
+      const total = getOtrasCuotas() + CUOTA_SOLICITAR.value;
+      if (total < limite) {
+        show('docs');
+        toast('Apto → documentación');
+      } else {
+        show('ko');
+        toast('No apto → KO');
+      }
+    });
+
+    // Demo helper: fill example values with double-click on title
+    document.querySelector('.title--calc').addEventListener('dblclick', () => {
+      ingresosInput.value = '3500';
+      cuota0.value = '780';
+      syncClearVisibility(ingresosInput, ingresosClear);
+      syncClearVisibility(cuota0, cuota0Clear);
+      recalculate();
+      toast('Ejemplo cargado: 3.500 / 780');
+    });
+
+    refreshCuotaLabels();
+    recalculate();
+  </script>
+</body>
+</html>

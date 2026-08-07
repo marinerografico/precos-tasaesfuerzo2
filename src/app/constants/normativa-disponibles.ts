@@ -17,8 +17,11 @@ export function calcularDisponiblesNormativa(
   return Math.max(0, ingresos - cuota);
 }
 
-export function formatNormativaEuro(value: number): string {
-  return formatPreconcedidoImporte(value);
+export function formatNormativaEuro(
+  value: number,
+  options?: { decimals?: number }
+): string {
+  return formatPreconcedidoImporte(value, options);
 }
 
 export interface NormativaEjemploTooltip {

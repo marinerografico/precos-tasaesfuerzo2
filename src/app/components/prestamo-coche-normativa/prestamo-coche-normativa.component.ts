@@ -39,6 +39,7 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
   @Output() closeRequested = new EventEmitter<void>();
   @Output() viewOtherLoans = new EventEmitter<void>();
   @Output() goToPosicionGlobal = new EventEmitter<void>();
+  @Output() openCalculator = new EventEmitter<void>();
 
   screen: NormativaScreen = 'question';
   paysElsewhereAnswer: NormativaAnswer = null;
@@ -145,6 +146,10 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
 
   selectSecondAnswer(answer: 'yes' | 'no'): void {
     this.secondAnswer = answer;
+  }
+
+  onOpenCalculator(): void {
+    this.openCalculator.emit();
   }
 
   onContinuar(): void {

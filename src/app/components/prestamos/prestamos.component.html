@@ -39,10 +39,21 @@
     (back)="onPrestamoCocheNormativaBack()"
     (accepted)="onPrestamoCocheNormativaAccepted()"
     (rejected)="onPrestamoCocheNormativaRejected()"
+    (openCalculator)="onPrestamoCocheNormativaOpenCalculator()"
     (viewOtherLoans)="onNormativaViewOtherLoans()"
     (goToPosicionGlobal)="onNormativaGoToPosicionGlobal()"
     (closeRequested)="onCloseRequestedPrestamoCoche()">
   </app-prestamo-coche-normativa>
+
+  <!-- Préstamo Coche: Calculadora normativa 40% -->
+  <app-prestamo-coche-normativa-calculadora
+    *ngIf="prestamoCocheView === 'normativa-calculadora'"
+    [cuotaMensual]="normativaCuotaMensual"
+    (close)="onPrestamoCocheCalculadoraClose()"
+    (accepted)="onPrestamoCocheNormativaAccepted()"
+    (rejected)="onPrestamoCocheNormativaRejected()"
+    (adjustSimulation)="onPrestamoCocheCalculadoraAdjustSimulation()">
+  </app-prestamo-coche-normativa-calculadora>
 
   <!-- Préstamo Coche: KO normativa — préstamo no disponible -->
   <app-prestamo-coche-normativa

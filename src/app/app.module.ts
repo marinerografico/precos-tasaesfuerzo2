@@ -22,6 +22,7 @@ import { PrestamoCocheOnboardingComponent } from './components/prestamo-coche-on
 import { PrestamoCocheSimulacionComponent } from './components/prestamo-coche-simulacion/prestamo-coche-simulacion.component';
 import { PrestamoCocheResumenComponent } from './components/prestamo-coche-resumen/prestamo-coche-resumen.component';
 import { PrestamoCocheNormativaComponent } from './components/prestamo-coche-normativa/prestamo-coche-normativa.component';
+import { PrestamoCocheNormativaCalculadoraComponent } from './components/prestamo-coche-normativa-calculadora/prestamo-coche-normativa-calculadora.component';
 import { PrestamoCocheDocumentManagerComponent } from './components/prestamo-coche-document-manager/prestamo-coche-document-manager.component';
 import { PrestamoCocheFirmaComponent } from './components/prestamo-coche-firma/prestamo-coche-firma.component';
 import { PrestamoCocheSeguroDocumentManagerComponent } from './components/prestamo-coche-seguro-document-manager/prestamo-coche-seguro-document-manager.component';
@@ -60,6 +61,7 @@ import { UpcomingPaymentBrandLogoComponent } from './components/upcoming-payment
     PrestamoCocheSimulacionComponent,
     PrestamoCocheResumenComponent,
     PrestamoCocheNormativaComponent,
+    PrestamoCocheNormativaCalculadoraComponent,
     PrestamoCocheDocumentManagerComponent,
     PrestamoCocheFirmaComponent,
     PrestamoCocheSeguroDocumentManagerComponent,

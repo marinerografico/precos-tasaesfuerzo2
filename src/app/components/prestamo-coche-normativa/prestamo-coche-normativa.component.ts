@@ -226,8 +226,15 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
   }
 
   private scrollToTop(): void {
+    const main = this.host.nativeElement.querySelector('.normativa-main') as HTMLElement | null;
+    if (main) {
+      main.scrollTop = 0;
+    }
     this.viewportScroller.scrollToPosition([0, 0]);
     setTimeout(() => {
+      if (main) {
+        main.scrollTop = 0;
+      }
       window.scrollTo(0, 0);
       const scrollable = document.querySelector('.wizard-content') || document.documentElement;
       if (scrollable && 'scrollTop' in scrollable) {

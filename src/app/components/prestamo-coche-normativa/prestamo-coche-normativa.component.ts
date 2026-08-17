@@ -43,6 +43,7 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
   private bodyOverlayElement: HTMLElement | null = null;
   private componentOverlayElement: HTMLElement | null = null;
   private savedComponentOverlayDisplay: string | null = null;
+  private savedBodyOverflow = '';
 
   constructor(
     private viewportScroller: ViewportScroller,
@@ -69,6 +70,7 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
       clearTimeout(this.otherProductRedirectTimer);
       this.otherProductRedirectTimer = null;
     }
+    this.setBodyScrollLocked(false);
     this.removeBodyOverlay();
   }
 
@@ -85,12 +87,10 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
   }
 
   selectPaysElsewhere(answer: 'yes' | 'no'): void {
-    if (answer === 'yes' && this.paysElsewhereAnswer === 'yes' && this.showCalculator) {
-      return;
-    }
     this.paysElsewhereAnswer = answer;
     if (answer === 'no') {
       this.showCalculator = false;
+      this.setBodyScrollLocked(false);
     } else {
       this.openCalculatorOverlay();
     }
@@ -98,21 +98,30 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
 
   openCalculatorOverlay(): void {
     this.showCalculator = true;
+    this.setBodyScrollLocked(true);
     setTimeout(() => this.initIcons(), 0);
+  }
+
+  onCalculatorClose(): void {
+    this.showCalculator = false;
+    this.setBodyScrollLocked(false);
   }
 
   onCalculatorAccepted(): void {
     this.showCalculator = false;
+    this.setBodyScrollLocked(false);
     this.accepted.emit();
   }
 
   onCalculatorRejected(): void {
     this.showCalculator = false;
+    this.setBodyScrollLocked(false);
     this.showUnavailableScreen();
   }
 
   onCalculatorAdjustSimulation(): void {
     this.showCalculator = false;
+    this.setBodyScrollLocked(false);
     this.adjustSimulation.emit();
   }
 
@@ -153,6 +162,15 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
     this.rejected.emit();
     this.scrollToTop();
     this.initIcons();
+  }
+
+  private setBodyScrollLocked(locked: boolean): void {
+    if (locked) {
+      this.savedBodyOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return;
+    }
+    document.body.style.overflow = this.savedBodyOverflow;
   }
 
   private scrollToTop(): void {

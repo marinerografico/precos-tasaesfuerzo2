@@ -31,6 +31,7 @@ interface CalculadoraResumen {
 })
 export class PrestamoCocheNormativaCalculadoraComponent implements OnInit, OnChanges {
   @Input() cuotaMensual = 0;
+  @Output() close = new EventEmitter<void>();
   @Output() accepted = new EventEmitter<void>();
   @Output() rejected = new EventEmitter<void>();
   @Output() adjustSimulation = new EventEmitter<void>();
@@ -107,6 +108,10 @@ export class PrestamoCocheNormativaCalculadoraComponent implements OnInit, OnCha
 
   trackByIndex(index: number): number {
     return index;
+  }
+
+  onClose(): void {
+    this.close.emit();
   }
 
   onContinue(): void {

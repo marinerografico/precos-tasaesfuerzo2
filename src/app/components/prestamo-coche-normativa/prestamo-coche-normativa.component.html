@@ -29,16 +29,10 @@
       </div>
     </header>
 
-    <main
-      class="normativa-main"
-      [class.normativa-main--with-calc]="showCalculator"
-      *ngIf="screen === 'question'">
+    <main class="normativa-main" *ngIf="screen === 'question'">
       <h2 class="normativa-title">Información económica</h2>
 
-      <section
-        class="normativa-question-block"
-        [class.normativa-question-block--answered]="showCalculator"
-        aria-labelledby="normativa-q1">
+      <section class="normativa-question-block" aria-labelledby="normativa-q1">
         <p id="normativa-q1" class="normativa-question">
           ¿Pagas cuotas de préstamos u otros productos financieros en otras entidades?
         </p>
@@ -68,16 +62,7 @@
         </div>
       </section>
 
-      <app-prestamo-coche-normativa-calculadora
-        *ngIf="showCalculator"
-        class="is-embedded"
-        [cuotaMensual]="cuotaMensual"
-        (accepted)="onCalculatorAccepted()"
-        (rejected)="onCalculatorRejected()"
-        (adjustSimulation)="onCalculatorAdjustSimulation()">
-      </app-prestamo-coche-normativa-calculadora>
-
-      <p class="normativa-info" *ngIf="!showCalculator">
+      <p class="normativa-info">
         <i data-lucide="info" class="normativa-info-icon" aria-hidden="true"></i>
         <span>
           Por normativa, necesitamos confirmar que puedes asumir todas tus cuotas, incluido este préstamo, sin superar el 40% de tus ingresos netos.
@@ -94,7 +79,26 @@
         Continuar
       </button>
     </footer>
+
+    <p class="normativa-calc-reopen" *ngIf="paysElsewhereAnswer === 'yes' && !showCalculator">
+      <button type="button" class="normativa-calc-reopen__btn" (click)="openCalculatorOverlay()">
+        Volver al cálculo
+      </button>
+    </p>
   </div>
+
+  <app-prestamo-coche-normativa-calculadora
+    *ngIf="showCalculator"
+    class="is-overlay"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Calculadora normativa 40%"
+    [cuotaMensual]="cuotaMensual"
+    (close)="onCalculatorClose()"
+    (accepted)="onCalculatorAccepted()"
+    (rejected)="onCalculatorRejected()"
+    (adjustSimulation)="onCalculatorAdjustSimulation()">
+  </app-prestamo-coche-normativa-calculadora>
 
   <div
     class="loan-unavailable-screen"

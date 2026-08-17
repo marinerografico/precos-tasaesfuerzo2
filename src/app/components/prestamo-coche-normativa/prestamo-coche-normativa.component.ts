@@ -149,17 +149,16 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
     }, 0);
   }
 
-  /** Calculadora no apta + continuar con esta cantidad → KO */
-  onCalculatorRejected(): void {
+  /** Calculadora no apta: vuelta a Q2 con sugerencia No; el usuario debe confirmar Sí/No */
+  onCalculatorReturnToQuestion(): void {
     this.showCalculator = false;
     this.setBodyScrollLocked(false);
-    this.showUnavailableScreen();
-  }
-
-  onCalculatorAdjustSimulation(): void {
-    this.showCalculator = false;
-    this.setBodyScrollLocked(false);
-    this.adjustSimulation.emit();
+    this.calculatorSuggestion = 'no';
+    this.secondAnswer = null;
+    setTimeout(() => {
+      this.initIcons();
+      this.scrollToSecondQuestion();
+    }, 0);
   }
 
   onContinuar(): void {

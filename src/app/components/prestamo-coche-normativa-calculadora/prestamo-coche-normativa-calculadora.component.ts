@@ -33,8 +33,7 @@ export class PrestamoCocheNormativaCalculadoraComponent implements OnInit, OnCha
   @Input() cuotaMensual = 0;
   @Output() close = new EventEmitter<void>();
   @Output() accepted = new EventEmitter<void>();
-  @Output() rejected = new EventEmitter<void>();
-  @Output() adjustSimulation = new EventEmitter<void>();
+  @Output() returnToQuestion = new EventEmitter<void>();
 
   ingresosRaw = '';
   cuotasExternas: string[] = [''];
@@ -67,11 +66,7 @@ export class PrestamoCocheNormativaCalculadoraComponent implements OnInit, OnCha
     if (!this.resumen) {
       return 'Continuar';
     }
-    return this.resumen.apto ? 'Continuar' : 'Continuar con esta cantidad';
-  }
-
-  get showAdjustSimulation(): boolean {
-    return !!this.resumen && !this.resumen.apto;
+    return this.resumen.apto ? 'Continuar' : 'Volver a la pregunta';
   }
 
   formatEuro(value: number, decimals = 0): string {
@@ -122,11 +117,7 @@ export class PrestamoCocheNormativaCalculadoraComponent implements OnInit, OnCha
       this.accepted.emit();
       return;
     }
-    this.rejected.emit();
-  }
-
-  onAdjustSimulation(): void {
-    this.adjustSimulation.emit();
+    this.returnToQuestion.emit();
   }
 
   private recalculate(): void {

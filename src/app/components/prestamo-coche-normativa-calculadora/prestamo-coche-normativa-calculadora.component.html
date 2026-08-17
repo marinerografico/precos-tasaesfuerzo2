@@ -123,7 +123,7 @@
       </p>
       <p class="normativa-calc-message" *ngIf="!r.apto">
         Usas el <strong>{{ r.pctIngresos }}% de tus ingresos</strong> en cuotas (límite 40%). Te pasas
-        {{ formatEuro(r.exceso) }}. Puedes volver a simular o continuar y recibir un KO.
+        {{ formatEuro(r.exceso) }}. Puedes volver a la pregunta y confirmar tu respuesta.
       </p>
     </aside>
   </main>
@@ -135,13 +135,6 @@
       [disabled]="!canContinue"
       (click)="onContinue()">
       {{ continueLabel }}
-    </button>
-    <button
-      *ngIf="showAdjustSimulation"
-      type="button"
-      class="normativa-calc-cta-secondary"
-      (click)="onAdjustSimulation()">
-      Volver a simulación
     </button>
   </footer>
 </div>

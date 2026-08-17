@@ -16,6 +16,7 @@ import { NormativaVariant } from '../../constants/normativa-disponibles';
 declare var lucide: any;
 
 type NormativaAnswer = 'yes' | 'no' | null;
+type SecondQuestionAnswer = 'yes' | 'no' | 'need-help' | null;
 type NormativaScreen = 'question' | 'unavailable' | 'redirect-spinner';
 
 @Component({
@@ -37,9 +38,13 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
 
   screen: NormativaScreen = 'question';
   paysElsewhereAnswer: NormativaAnswer = null;
+  secondAnswer: SecondQuestionAnswer = null;
+  calculatorSuggestion: NormativaAnswer = null;
   showCalculator = false;
+  showExampleTooltip = false;
 
   private otherProductRedirectTimer: ReturnType<typeof setTimeout> | null = null;
+  private removeDocumentClickListener: (() => void) | null = null;
   private bodyOverlayElement: HTMLElement | null = null;
   private componentOverlayElement: HTMLElement | null = null;
   private savedComponentOverlayDisplay: string | null = null;
@@ -72,10 +77,27 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
     }
     this.setBodyScrollLocked(false);
     this.removeBodyOverlay();
+    if (this.removeDocumentClickListener) {
+      this.removeDocumentClickListener();
+      this.removeDocumentClickListener = null;
+    }
+  }
+
+  get showSecondQuestion(): boolean {
+    return this.paysElsewhereAnswer === 'yes';
   }
 
   get canContinue(): boolean {
-    return this.screen === 'question' && this.paysElsewhereAnswer === 'no';
+    if (this.screen !== 'question' || this.paysElsewhereAnswer === null) {
+      return false;
+    }
+    if (this.paysElsewhereAnswer === 'no') {
+      return true;
+    }
+    if (this.secondAnswer === 'need-help') {
+      return true;
+    }
+    return this.secondAnswer === 'yes' || this.secondAnswer === 'no';
   }
 
   onBack(): void {
@@ -89,10 +111,18 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
   selectPaysElsewhere(answer: 'yes' | 'no'): void {
     this.paysElsewhereAnswer = answer;
     if (answer === 'no') {
+      this.resetSecondQuestionState();
       this.showCalculator = false;
       this.setBodyScrollLocked(false);
     } else {
-      this.openCalculatorOverlay();
+      setTimeout(() => this.initIcons(), 0);
+    }
+  }
+
+  selectSecondAnswer(answer: SecondQuestionAnswer): void {
+    this.secondAnswer = answer;
+    if (answer === 'yes' || answer === 'no') {
+      this.calculatorSuggestion = null;
     }
   }
 
@@ -107,12 +137,19 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
     this.setBodyScrollLocked(false);
   }
 
+  /** Calculadora apta: vuelta a Q2 con sugerencia; el usuario debe confirmar Sí/No */
   onCalculatorAccepted(): void {
     this.showCalculator = false;
     this.setBodyScrollLocked(false);
-    this.accepted.emit();
+    this.calculatorSuggestion = 'yes';
+    this.secondAnswer = null;
+    setTimeout(() => {
+      this.initIcons();
+      this.scrollToSecondQuestion();
+    }, 0);
   }
 
+  /** Calculadora no apta + continuar con esta cantidad → KO */
   onCalculatorRejected(): void {
     this.showCalculator = false;
     this.setBodyScrollLocked(false);
@@ -128,6 +165,44 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
   onContinuar(): void {
     if (this.paysElsewhereAnswer === 'no') {
       this.accepted.emit();
+      return;
+    }
+    if (this.secondAnswer === 'need-help') {
+      this.openCalculatorOverlay();
+      return;
+    }
+    if (this.secondAnswer === 'yes') {
+      this.accepted.emit();
+      return;
+    }
+    if (this.secondAnswer === 'no') {
+      this.showUnavailableScreen();
+    }
+  }
+
+  toggleExampleTooltip(event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+
+    this.showExampleTooltip = !this.showExampleTooltip;
+
+    if (this.showExampleTooltip) {
+      if (!this.removeDocumentClickListener) {
+        this.removeDocumentClickListener = this.renderer.listen('document', 'click', (evt: Event) => {
+          const target = evt.target as Node;
+          if (!this.host.nativeElement.contains(target)) {
+            this.showExampleTooltip = false;
+            if (this.removeDocumentClickListener) {
+              this.removeDocumentClickListener();
+              this.removeDocumentClickListener = null;
+            }
+          }
+        });
+      }
+    } else if (this.removeDocumentClickListener) {
+      this.removeDocumentClickListener();
+      this.removeDocumentClickListener = null;
     }
   }
 
@@ -153,7 +228,14 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
   /** Tras volver de simulación, el padre invoca esto vía ViewChild */
   applyAutoOpenCalculator(): void {
     this.paysElsewhereAnswer = 'yes';
+    this.secondAnswer = 'need-help';
+    this.calculatorSuggestion = null;
     this.openCalculatorOverlay();
+  }
+
+  private resetSecondQuestionState(): void {
+    this.secondAnswer = null;
+    this.calculatorSuggestion = null;
   }
 
   private showUnavailableScreen(): void {
@@ -162,6 +244,11 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
     this.rejected.emit();
     this.scrollToTop();
     this.initIcons();
+  }
+
+  private scrollToSecondQuestion(): void {
+    const block = this.host.nativeElement.querySelector('#normativa-q2') as HTMLElement | null;
+    block?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   private setBodyScrollLocked(locked: boolean): void {

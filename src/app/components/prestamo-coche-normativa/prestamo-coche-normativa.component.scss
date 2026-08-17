@@ -32,7 +32,7 @@
   overflow: hidden;
 }
 
-/* Main: scroller único; padding inferior para no tapar el CTA fijo ni el texto legal */
+/* Main: scroller único; con calculadora embebida pasa a layout en columna */
 .normativa-main {
   flex: 1 1 auto;
   min-height: 0;
@@ -47,6 +47,17 @@
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
   touch-action: pan-y;
+
+  &--with-calc {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding-bottom: 0;
+  }
+}
+
+.normativa-question-block--answered {
+  flex-shrink: 0;
 }
 
 .normativa-title {

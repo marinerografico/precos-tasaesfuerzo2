@@ -70,26 +70,6 @@
           Sumando lo que pagas cada mes por todos tus préstamos, incluido este. ¿El total es
           <span class="normativa-question-highlight">menor al 40%</span>
           de tus ingresos netos totales del mes?
-          <span class="normativa-help-tooltip-wrap">
-            <button
-              type="button"
-              class="normativa-help-btn"
-              [attr.aria-expanded]="showExampleTooltip ? 'true' : 'false'"
-              aria-controls="normativa-ejemplo-tooltip"
-              (click)="toggleExampleTooltip($event)"
-              title="Ver ejemplo">
-              <i data-lucide="info" aria-hidden="true"></i>
-              <span class="sr-only">Mostrar ejemplo</span>
-            </button>
-
-            <div
-              id="normativa-ejemplo-tooltip"
-              class="normativa-ejemplo-tooltip"
-              role="dialog"
-              [attr.aria-hidden]="!showExampleTooltip">
-              <p class="normativa-ejemplo-tooltip__text">Por ejemplo, si ingresas 2.000 €, el 40% serían 800 €.</p>
-            </div>
-          </span>
         </p>
 
         <div class="normativa-options" role="radiogroup" aria-labelledby="normativa-q2">

@@ -11,13 +11,7 @@ import {
 } from '@angular/core';
 import { ViewportScroller } from '@angular/common';
 import { markPreconcedidoNormativaRechazado } from '../../constants/prestamo-preconcedido-entry';
-import {
-  NormativaVariant,
-  NORMATIVA_INGRESOS_EJEMPLO,
-  buildNormativaEjemploNarrativa,
-  calcularDisponiblesNormativa,
-  formatNormativaEuro
-} from '../../constants/normativa-disponibles';
+import { NormativaVariant } from '../../constants/normativa-disponibles';
 
 declare var lucide: any;
 
@@ -39,52 +33,23 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
   @Output() closeRequested = new EventEmitter<void>();
   @Output() viewOtherLoans = new EventEmitter<void>();
   @Output() goToPosicionGlobal = new EventEmitter<void>();
-  @Output() openCalculator = new EventEmitter<void>();
+  @Output() adjustSimulation = new EventEmitter<void>();
 
   screen: NormativaScreen = 'question';
   paysElsewhereAnswer: NormativaAnswer = null;
-  secondAnswer: NormativaAnswer = null;
-
-  // Tooltip state for the example
-  showExampleTooltip = false;
-
-  // handler remover for document click listener (to close tooltip when clicking outside)
-  private removeDocumentClickListener: (() => void) | null = null;
+  showCalculator = false;
 
   private otherProductRedirectTimer: ReturnType<typeof setTimeout> | null = null;
-
-  // overlay appended to body (if used)
   private bodyOverlayElement: HTMLElement | null = null;
-  // component's in-template overlay element (if present) and its previous display value
   private componentOverlayElement: HTMLElement | null = null;
   private savedComponentOverlayDisplay: string | null = null;
+  private savedBodyOverflow = '';
 
   constructor(
     private viewportScroller: ViewportScroller,
     private host: ElementRef,
     private renderer: Renderer2
   ) {}
-
-  get isTangibleVariant(): boolean {
-    return this.variant === 'tangible';
-  }
-
-  get cuotaMensualLabel(): string {
-    return formatNormativaEuro(this.cuotaMensual);
-  }
-
-  /** X = ingresos de referencia (dosmileurista) − cuota de este préstamo */
-  get umbralDisponiblesEuros(): number {
-    return calcularDisponiblesNormativa(NORMATIVA_INGRESOS_EJEMPLO, this.cuotaMensual);
-  }
-
-  get umbralDisponiblesLabel(): string {
-    return formatNormativaEuro(this.umbralDisponiblesEuros);
-  }
-
-  get ejemploNarrativa(): string {
-    return buildNormativaEjemploNarrativa(this.cuotaMensual);
-  }
 
   ngOnInit(): void {
     if (this.initialScreen !== 'question') {
@@ -105,26 +70,12 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
       clearTimeout(this.otherProductRedirectTimer);
       this.otherProductRedirectTimer = null;
     }
-    if (this.removeDocumentClickListener) {
-      this.removeDocumentClickListener();
-      this.removeDocumentClickListener = null;
-    }
-    // ensure body overlay removed if still present
+    this.setBodyScrollLocked(false);
     this.removeBodyOverlay();
   }
 
-  get showSecondQuestion(): boolean {
-    return this.paysElsewhereAnswer === 'yes';
-  }
-
   get canContinue(): boolean {
-    if (this.screen !== 'question' || this.paysElsewhereAnswer === null) {
-      return false;
-    }
-    if (this.paysElsewhereAnswer === 'no') {
-      return true;
-    }
-    return this.secondAnswer !== null;
+    return this.screen === 'question' && this.paysElsewhereAnswer === 'no';
   }
 
   onBack(): void {
@@ -138,61 +89,71 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
   selectPaysElsewhere(answer: 'yes' | 'no'): void {
     this.paysElsewhereAnswer = answer;
     if (answer === 'no') {
-      this.secondAnswer = null;
+      this.showCalculator = false;
+      this.setBodyScrollLocked(false);
     } else {
-      setTimeout(() => this.initIcons(), 0);
+      this.openCalculatorOverlay();
     }
   }
 
-  selectSecondAnswer(answer: 'yes' | 'no'): void {
-    this.secondAnswer = answer;
+  openCalculatorOverlay(): void {
+    this.showCalculator = true;
+    this.setBodyScrollLocked(true);
+    setTimeout(() => this.initIcons(), 0);
   }
 
-  onOpenCalculator(): void {
-    this.openCalculator.emit();
+  onCalculatorClose(): void {
+    this.showCalculator = false;
+    this.setBodyScrollLocked(false);
+  }
+
+  onCalculatorAccepted(): void {
+    this.showCalculator = false;
+    this.setBodyScrollLocked(false);
+    this.accepted.emit();
+  }
+
+  onCalculatorRejected(): void {
+    this.showCalculator = false;
+    this.setBodyScrollLocked(false);
+    this.showUnavailableScreen();
+  }
+
+  onCalculatorAdjustSimulation(): void {
+    this.showCalculator = false;
+    this.setBodyScrollLocked(false);
+    this.adjustSimulation.emit();
   }
 
   onContinuar(): void {
     if (this.paysElsewhereAnswer === 'no') {
       this.accepted.emit();
-      return;
-    }
-    if (this.secondAnswer === 'yes') {
-      this.accepted.emit();
-      return;
-    }
-    if (this.secondAnswer === 'no') {
-      this.showUnavailableScreen();
     }
   }
 
-  toggleExampleTooltip(event?: Event): void {
-    if (event) { event.stopPropagation(); }
-
-    this.showExampleTooltip = !this.showExampleTooltip;
-
-    // attach/remove a document click listener to detect outside clicks
-    if (this.showExampleTooltip) {
-      // add listener
-      if (!this.removeDocumentClickListener) {
-        this.removeDocumentClickListener = this.renderer.listen('document', 'click', (evt: Event) => {
-          const target = evt.target as Node;
-          if (!this.host.nativeElement.contains(target)) {
-            this.showExampleTooltip = false;
-            if (this.removeDocumentClickListener) {
-              this.removeDocumentClickListener();
-              this.removeDocumentClickListener = null;
-            }
-          }
-        });
-      }
-    } else {
-      // remove listener if present
-      if (this.removeDocumentClickListener) {
-        this.removeDocumentClickListener();
-        this.removeDocumentClickListener = null;
-      }
+  onViewOtherLoansFromUnavailable(): void {
+    if (this.otherProductRedirectTimer) {
+      clearTimeout(this.otherProductRedirectTimer);
     }
+
+    this.screen = 'redirect-spinner';
+    this.createBodyOverlay();
+
+    this.otherProductRedirectTimer = setTimeout(() => {
+      this.otherProductRedirectTimer = null;
+      this.removeBodyOverlay();
+      this.viewOtherLoans.emit();
+    }, 2800);
+  }
+
+  onGoToPosicionGlobalFromUnavailable(): void {
+    this.goToPosicionGlobal.emit();
+  }
+
+  /** Tras volver de simulación, el padre invoca esto vía ViewChild */
+  applyAutoOpenCalculator(): void {
+    this.paysElsewhereAnswer = 'yes';
+    this.openCalculatorOverlay();
   }
 
   private showUnavailableScreen(): void {
@@ -203,26 +164,13 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
     this.initIcons();
   }
 
-  onViewOtherLoansFromUnavailable(): void {
-    if (this.otherProductRedirectTimer) {
-      clearTimeout(this.otherProductRedirectTimer);
+  private setBodyScrollLocked(locked: boolean): void {
+    if (locked) {
+      this.savedBodyOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return;
     }
-
-    this.screen = 'redirect-spinner';
-
-    // create a body-level overlay so it's not affected by component stacking contexts
-    this.createBodyOverlay();
-
-    this.otherProductRedirectTimer = setTimeout(() => {
-      this.otherProductRedirectTimer = null;
-      // ensure we remove the body overlay before emitting navigation event
-      this.removeBodyOverlay();
-      this.viewOtherLoans.emit();
-    }, 2800);
-  }
-
-  onGoToPosicionGlobalFromUnavailable(): void {
-    this.goToPosicionGlobal.emit();
+    document.body.style.overflow = this.savedBodyOverflow;
   }
 
   private scrollToTop(): void {
@@ -249,16 +197,12 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
     }
   }
 
-  /**
-   * Create an overlay element appended to document.body so it's not affected
-   * by ancestor stacking contexts (transforms) or scoped component styles.
-   */
   private createBodyOverlay(): void {
-    // if already created, ensure it's visible
-    if (this.bodyOverlayElement) { return; }
+    if (this.bodyOverlayElement) {
+      return;
+    }
 
     try {
-      // hide in-template overlay if present to avoid duplicate visuals
       const compOverlay = this.host.nativeElement.querySelector('.other-product-redirect-overlay');
       if (compOverlay) {
         this.componentOverlayElement = compOverlay as HTMLElement;
@@ -268,7 +212,6 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
 
       const overlay = this.renderer.createElement('div') as HTMLElement;
       this.renderer.addClass(overlay, 'other-product-redirect-overlay');
-      // accessibility
       this.renderer.setAttribute(overlay, 'role', 'status');
       this.renderer.setAttribute(overlay, 'aria-live', 'polite');
       this.renderer.setAttribute(overlay, 'aria-busy', 'true');
@@ -287,7 +230,9 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
 
       const text = this.renderer.createElement('p');
       this.renderer.addClass(text, 'other-product-redirect-text');
-      const textNode = this.renderer.createText('Te llevamos al proceso de solicitud para que puedas ver si el banco te lo aprueba.');
+      const textNode = this.renderer.createText(
+        'Te llevamos al proceso de solicitud para que puedas ver si el banco te lo aprueba.'
+      );
       this.renderer.appendChild(text, textNode);
 
       this.renderer.appendChild(content, spinner);
@@ -298,8 +243,6 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
       this.renderer.appendChild(document.body, overlay);
       this.bodyOverlayElement = overlay;
     } catch (e) {
-      // fallback: ignore if DOM manipulation not allowed
-      // (shouldn't happen in browser runtime)
       console.error('createBodyOverlay failed', e);
     }
   }
@@ -316,7 +259,6 @@ export class PrestamoCocheNormativaComponent implements OnInit, AfterViewInit, O
       this.bodyOverlayElement = null;
     }
 
-    // restore component-scoped overlay visibility if we hid it
     if (this.componentOverlayElement) {
       try {
         if (this.savedComponentOverlayDisplay !== null) {

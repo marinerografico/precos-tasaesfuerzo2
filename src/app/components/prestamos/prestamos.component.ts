@@ -17,6 +17,7 @@ import { distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
 import { WizardState } from '../../services/wizard-state.service';
 import { environment } from '../../../environments/environment';
 import { NormativaVariant } from '../../constants/normativa-disponibles';
+import { PrestamoCocheNormativaComponent } from '../prestamo-coche-normativa/prestamo-coche-normativa.component';
 
 declare var lucide: any;
 
@@ -30,6 +31,7 @@ export class PrestamosComponent implements AfterViewInit, OnInit, OnDestroy {
   @Output() previous = new EventEmitter<void>();
   
   @ViewChild('originalSlider', { static: false }) originalSlider?: ElementRef;
+  @ViewChild('normativaRef') normativaRef?: PrestamoCocheNormativaComponent;
   
   state$: Observable<WizardState>;
 
@@ -854,8 +856,11 @@ export class PrestamosComponent implements AfterViewInit, OnInit, OnDestroy {
     }
     if (this.returnToNormativaCalculadora) {
       this.returnToNormativaCalculadora = false;
-      this.setPrestamoFlowView('normativa-calculadora');
-      this.initializeIcons();
+      this.setPrestamoFlowView('normativa');
+      setTimeout(() => {
+        this.normativaRef?.applyAutoOpenCalculator();
+        this.initializeIcons();
+      }, 0);
       return;
     }
     // Navegar al resumen
@@ -909,17 +914,7 @@ export class PrestamosComponent implements AfterViewInit, OnInit, OnDestroy {
     }
   }
 
-  onPrestamoCocheNormativaOpenCalculator(): void {
-    this.setPrestamoFlowView('normativa-calculadora');
-    this.initializeIcons();
-  }
-
-  onPrestamoCocheCalculadoraClose(): void {
-    this.setPrestamoFlowView('normativa');
-    this.initializeIcons();
-  }
-
-  onPrestamoCocheCalculadoraAdjustSimulation(): void {
+  onPrestamoCocheNormativaAdjustSimulation(): void {
     this.returnToNormativaCalculadora = true;
     this.setPrestamoFlowView('simulation', { showOnboarding: false });
     this.initializeIcons();

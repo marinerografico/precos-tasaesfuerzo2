@@ -62,65 +62,6 @@
         </div>
       </section>
 
-      <section
-        *ngIf="showSecondQuestion"
-        class="normativa-question-block normativa-question-block--reveal"
-        aria-labelledby="normativa-q2">
-        <p id="normativa-q2" class="normativa-question">
-          Sumando lo que pagas cada mes por todos tus préstamos, incluido este. ¿El total es menor al 40% de tus ingresos netos totales del mes?
-          <button
-            type="button"
-            class="normativa-help-btn"
-            [attr.aria-expanded]="showExampleTooltip ? 'true' : 'false'"
-            aria-controls="normativa-ejemplo-tooltip"
-            (click)="toggleExampleTooltip($event)"
-            title="Ver ejemplo"
-          >
-            <i data-lucide="info" aria-hidden="true"></i>
-            <span class="sr-only">Mostrar ejemplo</span>
-          </button>
-        </p>
-
-        <div id="normativa-ejemplo-tooltip" class="normativa-ejemplo-tooltip" role="dialog" [attr.aria-hidden]="!showExampleTooltip">
-          <p class="normativa-ejemplo-tooltip__text">Por ejemplo, si ingresas 2.000 €, el 40% serían 800 €.</p>
-        </div>
-
-        <div class="normativa-options" role="radiogroup" aria-labelledby="normativa-q2">
-          <label class="normativa-option" [class.normativa-option--selected]="secondAnswer === 'yes'">
-            <input
-              type="radio"
-              name="secondAnswer"
-              value="yes"
-              class="normativa-option-input"
-              [checked]="secondAnswer === 'yes'"
-              (change)="selectSecondAnswer('yes')" />
-            <span class="normativa-option-control" aria-hidden="true"></span>
-            <span class="normativa-option-label">Sí</span>
-          </label>
-          <label class="normativa-option" [class.normativa-option--selected]="secondAnswer === 'no'">
-            <input
-              type="radio"
-              name="secondAnswer"
-              value="no"
-              class="normativa-option-input"
-              [checked]="secondAnswer === 'no'"
-              (change)="selectSecondAnswer('no')" />
-            <span class="normativa-option-control" aria-hidden="true"></span>
-            <span class="normativa-option-label">No</span>
-          </label>
-        </div>
-
-        <div class="normativa-calc-entry">
-          <p class="normativa-calc-entry__title">¿Necesitas ayuda con el cálculo?</p>
-          <p class="normativa-calc-entry__text">
-            Puedes ver si llegas al 40% fácilmente. No guardaremos la información aportada.
-          </p>
-          <button type="button" class="normativa-calc-entry__btn" (click)="onOpenCalculator()">
-            Calcular
-          </button>
-        </div>
-      </section>
-
       <p class="normativa-info">
         <i data-lucide="info" class="normativa-info-icon" aria-hidden="true"></i>
         <span>
@@ -129,7 +70,7 @@
       </p>
     </main>
 
-    <footer class="normativa-footer">
+    <footer class="normativa-footer" *ngIf="!showCalculator && paysElsewhereAnswer !== 'yes'">
       <button
         type="button"
         class="normativa-cta"
@@ -138,7 +79,26 @@
         Continuar
       </button>
     </footer>
+
+    <p class="normativa-calc-reopen" *ngIf="paysElsewhereAnswer === 'yes' && !showCalculator">
+      <button type="button" class="normativa-calc-reopen__btn" (click)="openCalculatorOverlay()">
+        Volver al cálculo
+      </button>
+    </p>
   </div>
+
+  <app-prestamo-coche-normativa-calculadora
+    *ngIf="showCalculator"
+    class="is-overlay"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Calculadora normativa 40%"
+    [cuotaMensual]="cuotaMensual"
+    (close)="onCalculatorClose()"
+    (accepted)="onCalculatorAccepted()"
+    (rejected)="onCalculatorRejected()"
+    (adjustSimulation)="onCalculatorAdjustSimulation()">
+  </app-prestamo-coche-normativa-calculadora>
 
   <div
     class="loan-unavailable-screen"

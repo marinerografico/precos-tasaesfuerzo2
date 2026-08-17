@@ -5,9 +5,9 @@ import {
   OnChanges,
   OnInit,
   Output,
-  SimpleChanges
+  SimpleChanges,
+  ElementRef
 } from '@angular/core';
-import { ViewportScroller } from '@angular/common';
 import { formatNormativaEuro } from '../../constants/normativa-disponibles';
 
 declare var lucide: any;
@@ -41,7 +41,7 @@ export class PrestamoCocheNormativaCalculadoraComponent implements OnInit, OnCha
 
   resumen: CalculadoraResumen | null = null;
 
-  constructor(private viewportScroller: ViewportScroller) {}
+  constructor(private host: ElementRef) {}
 
   ngOnInit(): void {
     this.scrollToTop();
@@ -177,14 +177,10 @@ export class PrestamoCocheNormativaCalculadoraComponent implements OnInit, OnCha
   }
 
   private scrollToTop(): void {
-    this.viewportScroller.scrollToPosition([0, 0]);
-    setTimeout(() => {
-      window.scrollTo(0, 0);
-      const scrollable = document.querySelector('.wizard-content') || document.documentElement;
-      if (scrollable && 'scrollTop' in scrollable) {
-        (scrollable as HTMLElement).scrollTop = 0;
-      }
-    }, 0);
+    const main = this.host.nativeElement.querySelector('.normativa-calc-main') as HTMLElement | null;
+    if (main) {
+      main.scrollTop = 0;
+    }
   }
 
   private initIcons(): void {

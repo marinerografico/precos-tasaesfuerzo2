@@ -31,9 +31,12 @@ interface CalculadoraResumen {
 })
 export class PrestamoCocheNormativaCalculadoraComponent implements OnInit, OnChanges {
   @Input() cuotaMensual = 0;
+  /** Si true, se muestra embebida en la página (sin overlay ni botón cerrar). */
+  @Input() embedded = false;
   @Output() close = new EventEmitter<void>();
   @Output() accepted = new EventEmitter<void>();
-  @Output() returnToQuestion = new EventEmitter<void>();
+  @Output() rejected = new EventEmitter<void>();
+  @Output() resultChange = new EventEmitter<{ ready: boolean; apto: boolean }>();
 
   ingresosRaw = '';
   cuotasExternas: string[] = [''];
@@ -43,7 +46,9 @@ export class PrestamoCocheNormativaCalculadoraComponent implements OnInit, OnCha
   constructor(private host: ElementRef) {}
 
   ngOnInit(): void {
-    this.scrollToTop();
+    if (!this.embedded) {
+      this.scrollToTop();
+    }
     this.recalculate();
     this.initIcons();
   }
@@ -60,13 +65,6 @@ export class PrestamoCocheNormativaCalculadoraComponent implements OnInit, OnCha
 
   get canContinue(): boolean {
     return this.resumen !== null;
-  }
-
-  get continueLabel(): string {
-    if (!this.resumen) {
-      return 'Continuar';
-    }
-    return this.resumen.apto ? 'Continuar' : 'Volver a la pregunta';
   }
 
   formatEuro(value: number, decimals = 0): string {
@@ -117,7 +115,7 @@ export class PrestamoCocheNormativaCalculadoraComponent implements OnInit, OnCha
       this.accepted.emit();
       return;
     }
-    this.returnToQuestion.emit();
+    this.rejected.emit();
   }
 
   private recalculate(): void {
@@ -126,6 +124,7 @@ export class PrestamoCocheNormativaCalculadoraComponent implements OnInit, OnCha
 
     if (ingresos === null || !hasAnyCuota) {
       this.resumen = null;
+      this.emitResult();
       return;
     }
 
@@ -152,6 +151,14 @@ export class PrestamoCocheNormativaCalculadoraComponent implements OnInit, OnCha
       exceso: Math.max(0, totalCuotas - limite),
       apto
     };
+    this.emitResult();
+  }
+
+  private emitResult(): void {
+    this.resultChange.emit({
+      ready: this.resumen !== null,
+      apto: !!this.resumen?.apto
+    });
   }
 
   private parseEuro(raw: string): number | null {

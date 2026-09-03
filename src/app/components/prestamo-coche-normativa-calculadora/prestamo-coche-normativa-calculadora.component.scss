@@ -15,6 +15,13 @@
   background: #ffffff;
 }
 
+:host.is-embedded {
+  flex: 0 0 auto;
+  min-height: 0;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
 .normativa-calc-container {
   width: 100%;
   height: 100%;
@@ -23,6 +30,11 @@
   flex-direction: column;
   flex: 1 1 auto;
   min-height: 0;
+}
+
+.normativa-calc-container--embedded {
+  height: auto;
+  flex: 0 0 auto;
 }
 
 .normativa-calc-header {
@@ -64,13 +76,22 @@
   touch-action: pan-y;
 }
 
+.normativa-calc-main--embedded {
+  flex: 0 0 auto;
+  overflow: visible;
+  padding: 0;
+  padding-bottom: 0;
+  -webkit-overflow-scrolling: auto;
+  overscroll-behavior-y: auto;
+}
+
 .normativa-calc-title {
   margin: 0 0 0.55rem;
-  font-size: 1.55rem;
+  font-size: 1rem;
   font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: -0.02em;
-  color: #0f172a;
+  line-height: 1.45;
+  letter-spacing: normal;
+  color: #000000;
 }
 
 .normativa-calc-subtitle {
@@ -300,6 +321,13 @@
   padding: 1rem 1.25rem calc(1rem + env(safe-area-inset-bottom, 0px));
   background: linear-gradient(to top, #fff 72%, rgba(255, 255, 255, 0));
   z-index: 20;
+}
+
+.normativa-calc-footer--embedded {
+  position: static;
+  padding: 1.25rem 0 calc(0.5rem + env(safe-area-inset-bottom, 0px));
+  background: transparent;
+  z-index: auto;
 }
 
 .normativa-calc-cta {

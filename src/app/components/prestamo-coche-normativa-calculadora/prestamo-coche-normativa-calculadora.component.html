@@ -1,5 +1,5 @@
-<div class="normativa-calc-container">
-  <header class="normativa-calc-header">
+<div class="normativa-calc-container" [class.normativa-calc-container--embedded]="embedded">
+  <header class="normativa-calc-header" *ngIf="!embedded">
     <button type="button" class="normativa-calc-close" (click)="onClose()" aria-label="Cerrar">
       <img
         class="normativa-calc-close-icon"
@@ -11,10 +11,10 @@
     </button>
   </header>
 
-  <main class="normativa-calc-main">
-    <h2 class="normativa-calc-title">Calcula el % entre ingresos y cuotas</h2>
+  <main class="normativa-calc-main" [class.normativa-calc-main--embedded]="embedded">
+    <h2 class="normativa-calc-title">Calcula tu disponible entre ingresos y cuotas en otras entidades</h2>
     <p class="normativa-calc-subtitle">
-      Esta es una herramienta orientativa para facilitarte el cálculo. No guardaremos los datos.
+      Recuerda que no guardamos tus datos.
     </p>
 
     <div class="normativa-calc-field">
@@ -123,18 +123,18 @@
       </p>
       <p class="normativa-calc-message" *ngIf="!r.apto">
         Usas el <strong>{{ r.pctIngresos }}% de tus ingresos</strong> en cuotas (límite 40%). Te pasas
-        {{ formatEuro(r.exceso) }}. Puedes volver a la pregunta y confirmar tu respuesta.
+        {{ formatEuro(r.exceso) }}. Si continúas, este préstamo no estará disponible.
       </p>
     </aside>
   </main>
 
-  <footer class="normativa-calc-footer">
+  <footer class="normativa-calc-footer" *ngIf="!embedded">
     <button
       type="button"
       class="normativa-calc-cta"
       [disabled]="!canContinue"
       (click)="onContinue()">
-      {{ continueLabel }}
+      Continuar
     </button>
   </footer>
 </div>

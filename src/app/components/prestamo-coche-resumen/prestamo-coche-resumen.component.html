@@ -39,86 +39,80 @@
         Tu solicitud incluye dos productos, ten en cuenta que la cuota del préstamo y la prima del seguro llegarán por separado.
       </p>
 
-      <!-- Tarjeta principal: detalle del préstamo -->
+      <!-- Tarjeta principal: cuota destacada + condiciones -->
       <section class="resumen-card resumen-card--loan" aria-labelledby="resumen-loan-heading">
         <h3 id="resumen-loan-heading" class="resumen-sr-only">Préstamo Preconcedido</h3>
-        <div class="resumen-field">
-          <span class="resumen-field-label">Importe solicitado</span>
-          <span class="resumen-field-value">{{ formattedAmount }} €</span>
-        </div>
-        <div class="resumen-field">
-          <span class="resumen-field-label">Plazos</span>
-          <span class="resumen-field-value">{{ data.termMonths }} cuotas mensuales ({{ termYears }} años)</span>
-        </div>
-        <div class="resumen-field">
+
+        <div class="resumen-loan-hero">
           <span class="resumen-field-label">Cuota</span>
-          <span class="resumen-field-value">{{ formattedMonthlyPayment }} € /mes</span>
-        </div>
-        <div class="resumen-field">
-          <span class="resumen-field-label">Intereses</span>
-          <span class="resumen-field-value">{{ formattedTotalInterest }} €</span>
-        </div>
-        <div class="resumen-field resumen-field--tin-tae">
-          <p class="resumen-tin-tae-line">
-            <span class="resumen-tin-part">TIN: {{ tinFormatted }} % anual</span>
-            <span class="resumen-tae-part"><strong>TAE: {{ taeFormatted }} %</strong></span>
+          <p class="resumen-cuota-value" [attr.aria-label]="formattedMonthlyPayment + ' euros al mes'">
+            <span class="resumen-cuota-int">{{ monthlyPaymentInteger }}</span><span class="resumen-cuota-dec">,{{ monthlyPaymentCents }}</span>
+            <span class="resumen-cuota-suffix"> € / mes</span>
+          </p>
+          <p class="resumen-importe-line">
+            Importe solicitado: <strong>{{ formattedAmount }} €</strong>
           </p>
         </div>
-        <div class="resumen-field resumen-field--commission">
-          <span class="resumen-field-label">Comisión de apertura</span>
-          <div class="resumen-commission-row">
-            <span class="resumen-field-value">{{ formattedOpeningCommission }} €</span>
-            <span class="resumen-badge resumen-badge-zero" *ngIf="data.openingCommission === 0">Sin comisión de apuertura</span>
+
+        <div class="resumen-loan-divider" aria-hidden="true"></div>
+
+        <div class="resumen-loan-mid">
+          <div class="resumen-field resumen-field--flush">
+            <span class="resumen-field-label">Plazo</span>
+            <span class="resumen-field-value">{{ termYears }} años ({{ data.termMonths }} cuotas mensuales)</span>
+          </div>
+          <div class="resumen-field resumen-field--flush">
+            <span class="resumen-field-label">Total a devolver</span>
+            <span class="resumen-field-value resumen-field-value--emphasis">{{ formattedTotalToRepay }} €</span>
           </div>
         </div>
-        <div class="resumen-field resumen-field--total">
-          <span class="resumen-field-label">Total a devolver</span>
-          <span class="resumen-field-value resumen-field-value--emphasis">{{ formattedTotalToRepay }} €</span>
+
+        <div class="resumen-loan-divider" aria-hidden="true"></div>
+
+        <div class="resumen-loan-grid">
+          <div class="resumen-field resumen-field--flush">
+            <span class="resumen-field-label">TIN</span>
+            <span class="resumen-field-value">{{ tinFormatted }} % anual</span>
+          </div>
+          <div class="resumen-field resumen-field--flush">
+            <span class="resumen-field-label">TAE</span>
+            <span class="resumen-field-value">{{ taeFormatted }} %</span>
+          </div>
+          <div class="resumen-field resumen-field--flush">
+            <span class="resumen-field-label">Intereses</span>
+            <span class="resumen-field-value">{{ formattedTotalInterest }} €</span>
+          </div>
+          <div class="resumen-field resumen-field--flush">
+            <span class="resumen-field-label">Comisión de apertura</span>
+            <span class="resumen-field-value">{{ formattedOpeningCommission }} €</span>
+          </div>
         </div>
+
         <a href="#" class="resumen-link resumen-link--card" (click)="onModifyRequest(); $event.preventDefault()">Modificar solicitud</a>
       </section>
 
-      <!-- Primera cuota -->
-      <section class="resumen-card resumen-card--compact" aria-label="Fecha del pago de la primera cuota">
-        <div class="resumen-field resumen-field--single">
-          <span class="resumen-field-label">Pago de la primera cuota</span>
-          <span class="resumen-field-value">{{ data.firstPaymentDate }}</span>
-        </div>
-      </section>
-
-      <!-- Info cancelación anticipada -->
-      <div class="resumen-info-block resumen-info-block--plain">
-        <span class="resumen-info-bullet" aria-hidden="true">i</span>
-        <p class="resumen-info-text">
-          La cancelación anticipada será del 1,00 % del importe reembolsado, si falta más de un año para el vencimiento del contrato, o del 0,50 % del importe reembolsado en caso contrario.
-        </p>
-      </div>
-
-      <!-- Cuenta de destino -->
-      <section class="resumen-section-block" aria-labelledby="resumen-cuenta-heading">
-        <h3 id="resumen-cuenta-heading" class="resumen-subsection-title">Cuenta de destino y cobro</h3>
-        <div class="resumen-card">
-          <div class="resumen-field">
+      <!-- Detalles del préstamo -->
+      <section class="resumen-section-block" aria-labelledby="resumen-detalles-heading">
+        <h3 id="resumen-detalles-heading" class="resumen-subsection-title">Detalles del préstamo</h3>
+        <div class="resumen-card resumen-card--details">
+          <div class="resumen-field resumen-field--flush">
+            <span class="resumen-field-label">Pago de la primera cuota</span>
+            <span class="resumen-field-value">{{ firstPaymentDateLabel }}</span>
+          </div>
+          <div class="resumen-field resumen-field--flush">
             <span class="resumen-field-label">Cuenta de depósito del préstamo</span>
             <span class="resumen-field-value">{{ data.accountNumber || 'Cuenta Online Sabadell •••2930' }}</span>
           </div>
-          <div class="resumen-field">
+          <div class="resumen-field resumen-field--flush">
             <span class="resumen-field-label">Titular de la cuenta</span>
             <span class="resumen-field-value">{{ data.accountHolder || 'María García Palao' }}</span>
           </div>
         </div>
       </section>
 
-      <div class="resumen-info-block resumen-info-block--plain">
-        <span class="resumen-info-bullet" aria-hidden="true">i</span>
-        <p class="resumen-info-text">
-          Todos los titulares de la cuenta deberán firmar la documentación asociada al préstamo.
-        </p>
-      </div>
-
       <!-- Motivo del préstamo -->
       <section class="resumen-section-block" aria-labelledby="resumen-motivo-heading">
-        <h3 id="resumen-motivo-heading" class="resumen-subsection-title">Motivo del préstamo</h3>
+        <h3 id="resumen-motivo-heading" class="resumen-subsection-title">1. Elige el motivo del préstamo</h3>
         <div
           class="resumen-card resumen-card--select resumen-item-dropdown"
           (click)="toggleLoanPurposeDropdown()"
@@ -127,7 +121,7 @@
           aria-haspopup="listbox"
           aria-labelledby="resumen-motivo-heading resumen-motivo-label">
           <div class="resumen-select-inner">
-            <span id="resumen-motivo-label" class="resumen-field-label">Motivo</span>
+            <span id="resumen-motivo-label" class="resumen-field-label">Motivo del préstamo</span>
             <div class="resumen-select-row">
               <span class="resumen-field-value">{{ data.loanPurpose || loanPurposeOptions[0] }}</span>
               <i data-lucide="chevron-down" class="resumen-select-chevron" [class.rotated]="showLoanPurposeDropdown"></i>
@@ -144,6 +138,22 @@
           </div>
         </div>
       </section>
+
+      <!-- Info cancelación anticipada -->
+      <div class="resumen-info-block resumen-info-block--plain">
+        <i data-lucide="info" class="resumen-info-icon" aria-hidden="true"></i>
+        <p class="resumen-info-text">
+          La cancelación anticipada será del 1,00 % del importe reembolsado, si falta más de un año para el vencimiento del contrato, o del 0,50 % del importe reembolsado en caso contrario.
+        </p>
+      </div>
+
+      <div class="resumen-info-block resumen-info-block--plain">
+        <i data-lucide="info" class="resumen-info-icon" aria-hidden="true"></i>
+        <p class="resumen-info-text">
+          Los resultados de esta simulación son de carácter informativo y válidos exclusivamente para su solicitud online.
+          Banco Sabadell se reserva el derecho de no hacer efectivo este préstamo si durante el periodo de tramitación de la solicitud se conoce alguna circunstancia del titular o de los titulares que pueda afectar a la capacidad de pago o a la solvencia del mismo.
+        </p>
+      </div>
 
       <!-- Módulo Resumen del Seguro (solo si hay seguro) -->
       <div class="resumen-module resumen-module-insurance" *ngIf="data.hasInsurance">
@@ -229,30 +239,29 @@
         </div>
       </div>
 
-      <!-- Legal Information -->
-      <div class="resumen-legal">
-        <div class="resumen-legal-row">
-          <i data-lucide="info" class="resumen-legal-icon" aria-hidden="true"></i>
-          <div class="resumen-legal-content">
-            <p class="resumen-legal-text">
-              Los resultados de esta simulación son de carácter informativo y válidos exclusivamente para su solicitud online.
-            </p>
-            <p class="resumen-legal-text">
-              Banco Sabadell se reserva el derecho de no hacer efectivo este préstamo si durante el periodo de tramitación de la solicitud se conoce alguna circunstancia del titular o de los titulares que pueda afectar a la capacidad de pago o a la solvencia del mismo.
-            </p>
-          </div>
-        </div>
-      </div>
-    </main>
+      <!-- Consulta de información crediticia -->
+      <aside class="resumen-crediticia" aria-labelledby="resumen-crediticia-heading">
+        <h3 id="resumen-crediticia-heading" class="resumen-crediticia-title">Consulta de información crediticia</h3>
+        <p class="resumen-crediticia-text">
+          Al continuar con tu proceso de solicitud, te informaremos de que Banco Sabadell consultará tus datos personales en sistemas de información crediticia con la finalidad de evaluar tu solvencia y capacidad de pago para la concesión del préstamo.
+        </p>
+        <p class="resumen-crediticia-text">
+          Estas consultas se realizarán en los siguientes ficheros: ASNEF, BADEXCUG y RAI.
+        </p>
+        <p class="resumen-crediticia-text">
+          Puede obtener información adicional sobre estas consultas, los sistemas de información crediticia consultados y sobre el tratamiento de sus datos personales –incluyendo el ejercicio de tus derechos– en la página web del Banco (www.bancsabadell.com, apartado "Información a clientes" "Anexo información detallada sobre protección de datos de carácter personal") o en cualquiera de las oficinas del Banco.
+        </p>
+      </aside>
 
-    <!-- Footer -->
-    <footer class="resumen-footer">
-      <button type="button"
-              class="resumen-cta"
-              (click)="onContinue()">
-        Leer documentación
-      </button>
-    </footer>
+      <!-- CTA al final del scroll (no sticky) -->
+      <footer class="resumen-footer">
+        <button type="button"
+                class="resumen-cta"
+                (click)="onContinue()">
+          Continuar
+        </button>
+      </footer>
+    </main>
 
     <!-- Toast de éxito: seguro añadido -->
     <div class="toast-container" *ngIf="showSuccessToast">

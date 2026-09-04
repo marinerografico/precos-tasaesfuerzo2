@@ -355,6 +355,15 @@ export class PrestamoCocheResumenComponent implements OnInit, AfterViewInit, OnD
     return this.data.monthlyPayment.toFixed(2).replace('.', ',');
   }
 
+  get monthlyPaymentInteger(): string {
+    const parts = this.data.monthlyPayment.toFixed(2).split('.');
+    return Number(parts[0]).toLocaleString('es-ES');
+  }
+
+  get monthlyPaymentCents(): string {
+    return this.data.monthlyPayment.toFixed(2).split('.')[1];
+  }
+
   get formattedTotalInterest(): string {
     return this.data.totalInterest.toLocaleString('es-ES', {
       minimumFractionDigits: 2,
@@ -382,6 +391,21 @@ export class PrestamoCocheResumenComponent implements OnInit, AfterViewInit, OnD
 
   get taeFormatted(): string {
     return this.data.tae.toFixed(2).replace('.', ',');
+  }
+
+  get firstPaymentDateLabel(): string {
+    if (this.data.firstPaymentDate?.trim()) {
+      return this.data.firstPaymentDate;
+    }
+    const today = new Date();
+    const firstPayment = new Date(today);
+    firstPayment.setMonth(today.getMonth() + 1);
+    firstPayment.setDate(30);
+    return firstPayment.toLocaleDateString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
   }
 
   get termYears(): number {
